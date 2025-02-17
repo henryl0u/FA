@@ -1,0 +1,28 @@
+
+Residuals for 66:
+Sum of predicted tuition (Sum of EV): 1006767.0
+Sum of actual tuition: 1109300
+Sum of residuals: 102533.0
+Ratio of sum of residuals to sum of actual tuition: 0.09243036148922744
+
+Residuals for 67:
+Sum of predicted tuition (Sum of EV): 3971213.0
+Sum of actual tuition: 3498850
+Sum of residuals: -472363.0
+Ratio of sum of residuals to sum of actual tuition: 0.1350052159995427
+
+Analysis for Prediction 66:
+Sum EV: 1006767
+Num applicants: 1027
+EV per applicant: 980.2989289191821
+Average ATCTR likelihood: 0.12326611489776047
+Price: 7952.704031698109
+Average discount: 6480.379746835443
+
+Analysis for Prediction 67:
+Sum EV: 3971213
+Num applicants: 4195
+EV per applicant: 946.653873659118
+Average ATCTR likelihood: 0.11300977353992848
+Price: 8376.743391354972
+Average discount: 5873.31346841478

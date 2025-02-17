@@ -1,0 +1,18 @@
+Classification Model:
+Best Parameters:
+iterations: 500
+
+Validation Set Accuracy: 0.7049
+Validation Set Balanced Accuracy: 0.6666
+Validation Set F1 Score: 0.4874
+Validation Set ROC AUC Score: 0.7280
+
+              precision    recall  f1-score   support
+
+       False       0.85      0.74      0.79      3049
+        True       0.41      0.59      0.49       943
+
+    accuracy                           0.70      3992
+   macro avg       0.63      0.67      0.64      3992
+weighted avg       0.75      0.70      0.72      3992
+
