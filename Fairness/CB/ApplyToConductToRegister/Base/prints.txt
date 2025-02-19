@@ -1,28 +1,34 @@
+Predictions for 66:
+Classification Report:
+              precision    recall  f1-score   support
 
-Residuals for 66:
-Sum of predicted tuition (Sum of EV): 1006767.0
-Sum of actual tuition: 1109300
-Sum of residuals: 102533.0
-Ratio of sum of residuals to sum of actual tuition: 0.09243036148922744
+       False       0.96      0.99      0.97       883
+        True       0.91      0.74      0.82       144
 
-Residuals for 67:
-Sum of predicted tuition (Sum of EV): 3971213.0
-Sum of actual tuition: 3498850
-Sum of residuals: -472363.0
-Ratio of sum of residuals to sum of actual tuition: 0.1350052159995427
+    accuracy                           0.95      1027
+   macro avg       0.94      0.87      0.90      1027
+weighted avg       0.95      0.95      0.95      1027
 
-Analysis for Prediction 66:
-Sum EV: 1006767
-Num applicants: 1027
-EV per applicant: 980.2989289191821
-Average ATCTR likelihood: 0.12326611489776047
-Price: 7952.704031698109
-Average discount: 6480.379746835443
+Accuracy: 0.9542356377799416
+Balanced Accuracy: 0.8658652636214924
+F1 Score: 0.8199233716475096
+ROC AUC Score: 0.9433434000251668
 
-Analysis for Prediction 67:
-Sum EV: 3971213
-Num applicants: 4195
-EV per applicant: 946.653873659118
-Average ATCTR likelihood: 0.11300977353992848
-Price: 8376.743391354972
-Average discount: 5873.31346841478
+
+Predictions for 67:
+Classification Report:
+              precision    recall  f1-score   support
+
+       False       0.97      0.99      0.98      3733
+        True       0.95      0.77      0.85       462
+
+    accuracy                           0.97      4195
+   macro avg       0.96      0.88      0.92      4195
+weighted avg       0.97      0.97      0.97      4195
+
+Accuracy: 0.9697258641239571
+Balanced Accuracy: 0.8805720130391976
+F1 Score: 0.8479041916167664
+ROC AUC Score: 0.954960032377659
+
+

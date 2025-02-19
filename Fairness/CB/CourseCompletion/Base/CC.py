@@ -40,10 +40,10 @@ sys.stdout = f
 
 # Load data
 training_data = pd.read_excel(
-    "./Data/FA/FA Training Data 58-65, Course Completion.xlsx"
+    "./Data/FA Training Data 58-65, Course Completion.xlsx"
 )
-pred66_data = pd.read_excel("./Data/FA/FA Test Data 66, Course Completion.xlsx")
-pred67_data = pd.read_excel("./Data/FA/FA Test Data 67, Course Completion.xlsx")
+pred66_data = pd.read_excel("./Data/FA Test Data 66, Course Completion.xlsx")
+pred67_data = pd.read_excel("./Data/FA Test Data 67, Course Completion.xlsx")
 
 # Fix only the country column by replacing NaN with "NA"
 for df in [training_data, pred66_data, pred67_data]:

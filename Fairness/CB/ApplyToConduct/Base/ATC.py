@@ -39,9 +39,9 @@ f = open(f"{base_path}/evaluation/prints.txt", "w")
 sys.stdout = f
 
 # Load data
-training_data = pd.read_excel("./Data/FA/FA Training Data 58-65, Apply To Conduct.xlsx")
-pred66_data = pd.read_excel("./Data/FA/FA Test Data 66, Apply To Conduct.xlsx")
-pred67_data = pd.read_excel("./Data/FA/FA Test Data 67, Apply To Conduct.xlsx")
+training_data = pd.read_excel("./Data/FA Training Data 58-65, Apply To Conduct.xlsx")
+pred66_data = pd.read_excel("./Data/FA Test Data 66, Apply To Conduct.xlsx")
+pred67_data = pd.read_excel("./Data/FA Test Data 67, Apply To Conduct.xlsx")
 
 # Fix only the country column by replacing NaN with "NA"
 for df in [training_data, pred66_data, pred67_data]:
@@ -401,7 +401,6 @@ feature_columns = [
     "prior_education",
     "reason_for_applying",
     "character_count",
-    "course_completion_status",
     "management_leadership_experience",
     "tuition_benefits",
     "english_proficient",
@@ -410,7 +409,6 @@ feature_columns = [
 target_column = "did_interview"
 
 param_grid = {
-    "iterations": [500],
 }
 
 # Main code for classification model
@@ -425,6 +423,7 @@ calibrated_clf = classification_model(
     calibrate=True,
 )
 
+save_model(calibrated_clf, base_path)
 
 # Predict enrollment likelihood for multiple datasets
 prediction_datasets = {
