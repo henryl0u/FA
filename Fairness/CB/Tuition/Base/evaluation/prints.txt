@@ -1,0 +1,25 @@
+Regression Model:
+Best Parameters: {}
+Validation MAE: 1534.79
+Validation RMSE: 1989.66
+Validation R² Score: 0.5458
+
+Residuals for 66:
+Sum of predicted tuition: 1047074.6831999023
+Sum of actual tuition: 1109300
+Sum of residuals: 62225.31680009779
+
+Residuals for rounded_66:
+Sum of predicted tuition: 1051150
+Sum of actual tuition: 1109300
+Sum of residuals: 58150
+
+Residuals for 67:
+Sum of predicted tuition: 3347423.589437673
+Sum of actual tuition: 3463400
+Sum of residuals: 115976.41056232716
+
+Residuals for rounded_67:
+Sum of predicted tuition: 3354750
+Sum of actual tuition: 3463400
+Sum of residuals: 108650

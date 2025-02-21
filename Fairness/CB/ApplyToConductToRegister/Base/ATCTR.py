@@ -58,6 +58,31 @@ def replace_nulls_with_nearest_tuition(target_data, source_data):
 replace_nulls_with_nearest_tuition(pred66_data, training_data)
 replace_nulls_with_nearest_tuition(pred67_data, training_data)
 
+# # Handle null tuition values (loss due to cost from advertising)
+# pred66_data["tuition"] = pred66_data["tuition"].fillna(0)
+# pred67_data["tuition"] = pred67_data["tuition"].fillna(0)
+
+# pred66_data.rename(columns={"tuition": "tuition_actual"}, inplace=True)
+# pred67_data.rename(columns={"tuition": "tuition_actual"}, inplace=True)
+
+
+# def replace_nulls_with_nearest_tuition(target_data, source_data):
+#     for index, row in target_data.iterrows():
+#         # Filter out rows in source_data where 'tuition' is NA
+#         valid_tuitions = source_data["tuition"].dropna()
+#         if not valid_tuitions.empty:
+#             # Calculate the absolute difference between 'tuition_predicted' and valid tuitions
+#             nearest_index = (valid_tuitions - row["tuition_predicted"]).abs().idxmin()
+#             # Get the nearest tuition from source_data
+#             nearest_tuition = source_data.at[nearest_index, "tuition"]
+#             # Replace the null in target_data with the nearest tuition from source_data
+#             target_data.at[index, "tuition"] = nearest_tuition
+
+
+# # Apply the function to each DataFrame, using ev_data as the source for replacements
+# replace_nulls_with_nearest_tuition(pred66_data, training_data)
+# replace_nulls_with_nearest_tuition(pred67_data, training_data)
+
 # Define values for mapping
 mappings = {
     "company_caliber": {"Average": 1, "Self-Employed": 1, "Good": 2, "Elite": 3},
@@ -236,14 +261,31 @@ def enrollment_prediction(pred_data, pred_name, base_path):
     pred_data["predicted_enrollment"] = pred_data["enrollment_likelihood"] > 0.6
     pred_data["predicted_enrollment"] = pred_data["predicted_enrollment"].astype(bool)
 
-    save_dir = f"{base_path}/prediction/{pred_name}"
-    os.makedirs(save_dir, exist_ok=True)
+    # Columns you want to move to the front
+    columns_to_move = [
+        "did_interview",
+        "accepted_offer",
+        "predicted_enrollment",
+        "tuition",
+        "tuition_predicted",
+        #"tuition_actual",
+        "enrollment_likelihood",
+        "interview_likelihood",
+    ]
+
+    # Create a new column order
+    new_order = columns_to_move + [
+        col for col in pred_data.columns if col not in columns_to_move
+    ]
+
+    # Reorder the DataFrame
+    df_reordered = pred_data[new_order]
 
     save_dir = f"{base_path}/prediction/{pred_name}"
     os.makedirs(save_dir, exist_ok=True)
 
     # Save the likelihood predictions to an Excel file for later use
-    pred_data.to_excel(
+    df_reordered.to_excel(
         f"{save_dir}/enrollment_likelihood_{pred_name}.xlsx", index=False
     )
 

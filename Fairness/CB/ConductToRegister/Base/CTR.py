@@ -47,27 +47,39 @@ pred67_data = pd.read_excel("./Data/FA Test Data 67, Conduct To Register.xlsx")
 for df in [training_data, pred66_data, pred67_data]:
     df["country"] = df["country"].fillna("NA")
 
+def calculate_total_payment(base_tuition, tuition_monthly):
+    if base_tuition == 13300:
+        return 14 * tuition_monthly
+    else:
+        return 15 * tuition_monthly
 
-def replace_nulls_with_nearest_tuition(target_data, source_data):
-    for index, row in target_data.iterrows():
-        if pd.isnull(row["tuition"]):
-            # Filter out rows in source_data where 'tuition' is NA
-            valid_tuitions = source_data["tuition"].dropna()
-            if not valid_tuitions.empty:
-                # Calculate the absolute difference between 'tuition_predicted' and valid tuitions
-                nearest_index = (
-                    (valid_tuitions - row["tuition_predicted"]).abs().idxmin()
-                )
-                # Get the nearest tuition from source_data
-                nearest_tuition = source_data.at[nearest_index, "tuition"]
-                # Replace the null in target_data with the nearest tuition from source_data
-                target_data.at[index, "tuition"] = nearest_tuition
+# Apply the function to each DataFrame
+training_data["total_payment"] = training_data.apply(lambda row: calculate_total_payment(row["base_tuition"], row["tuition_monthly"]), axis=1)
+pred66_data["total_payment"] = pred66_data.apply(lambda row: calculate_total_payment(row["base_tuition"], row["tuition_monthly"]), axis=1)
+pred67_data["total_payment"] = pred67_data.apply(lambda row: calculate_total_payment(row["base_tuition"], row["tuition_monthly"]), axis=1)
 
 
-# Apply the function to each DataFrame, using training_data as the source for replacements
-replace_nulls_with_nearest_tuition(training_data, training_data)
-replace_nulls_with_nearest_tuition(pred66_data, training_data)
-replace_nulls_with_nearest_tuition(pred67_data, training_data)
+
+# def replace_nulls_with_nearest_tuition(target_data, source_data):
+#     for index, row in target_data.iterrows():
+#         if pd.isnull(row["tuition"]):
+#             # Filter out rows in source_data where 'tuition' is NA
+#             valid_tuitions = source_data["tuition"].dropna()
+#             if not valid_tuitions.empty:
+#                 # Calculate the absolute difference between 'tuition_predicted' and valid tuitions
+#                 nearest_index = (
+#                     (valid_tuitions - row["tuition_predicted"]).abs().idxmin()
+#                 )
+#                 # Get the nearest tuition from source_data
+#                 nearest_tuition = source_data.at[nearest_index, "tuition"]
+#                 # Replace the null in target_data with the nearest tuition from source_data
+#                 target_data.at[index, "tuition"] = nearest_tuition
+
+
+# # Apply the function to each DataFrame, using training_data as the source for replacements
+# replace_nulls_with_nearest_tuition(training_data, training_data)
+# replace_nulls_with_nearest_tuition(pred66_data, training_data)
+# replace_nulls_with_nearest_tuition(pred67_data, training_data)
 
 
 # Define values for mapping
@@ -423,7 +435,8 @@ feature_columns = [
     "prior_education",
     "reason_for_applying",
     "character_count",
-    "tuition",
+    #"tuition",
+    "total_payment",
     "management_leadership_experience",
     "tuition_benefits",
     "english_proficient",
@@ -431,8 +444,7 @@ feature_columns = [
 
 target_column = "accepted_offer"
 
-param_grid = {
-}
+param_grid = {}
 
 # Main code for classification model
 print("Classification Model:")
