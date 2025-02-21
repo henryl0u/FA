@@ -47,41 +47,6 @@ pred67_data = pd.read_excel("./Data/FA Test Data 67, Conduct To Register.xlsx")
 for df in [training_data, pred66_data, pred67_data]:
     df["country"] = df["country"].fillna("NA")
 
-def calculate_total_payment(base_tuition, tuition_monthly):
-    if base_tuition == 13300:
-        return 14 * tuition_monthly
-    else:
-        return 15 * tuition_monthly
-
-# Apply the function to each DataFrame
-training_data["total_payment"] = training_data.apply(lambda row: calculate_total_payment(row["base_tuition"], row["tuition_monthly"]), axis=1)
-pred66_data["total_payment"] = pred66_data.apply(lambda row: calculate_total_payment(row["base_tuition"], row["tuition_monthly"]), axis=1)
-pred67_data["total_payment"] = pred67_data.apply(lambda row: calculate_total_payment(row["base_tuition"], row["tuition_monthly"]), axis=1)
-
-
-
-# def replace_nulls_with_nearest_tuition(target_data, source_data):
-#     for index, row in target_data.iterrows():
-#         if pd.isnull(row["tuition"]):
-#             # Filter out rows in source_data where 'tuition' is NA
-#             valid_tuitions = source_data["tuition"].dropna()
-#             if not valid_tuitions.empty:
-#                 # Calculate the absolute difference between 'tuition_predicted' and valid tuitions
-#                 nearest_index = (
-#                     (valid_tuitions - row["tuition_predicted"]).abs().idxmin()
-#                 )
-#                 # Get the nearest tuition from source_data
-#                 nearest_tuition = source_data.at[nearest_index, "tuition"]
-#                 # Replace the null in target_data with the nearest tuition from source_data
-#                 target_data.at[index, "tuition"] = nearest_tuition
-
-
-# # Apply the function to each DataFrame, using training_data as the source for replacements
-# replace_nulls_with_nearest_tuition(training_data, training_data)
-# replace_nulls_with_nearest_tuition(pred66_data, training_data)
-# replace_nulls_with_nearest_tuition(pred67_data, training_data)
-
-
 # Define values for mapping
 mappings = {
     "company_caliber": {"Average": 1, "Self-Employed": 1, "Good": 2, "Elite": 3},
@@ -208,12 +173,12 @@ def plot_likelihood_distribution(y_true, y_probs, save_path=None):
         common_norm=False,
     )
 
-    plt.title("Distribution of Predicted Likelihoods by Actual Interview Conducting")
-    plt.xlabel("Predicted Likelihood to Conduct")
+    plt.title("Distribution of Predicted Likelihoods by Actual Enrollment")
+    plt.xlabel("Predicted Likelihood to Enroll")
     plt.ylabel("Count")
     # Set custom legend labels
     plt.legend(
-        title="Actual Interview Conducting", labels=["Conducted", "Not Conducted"]
+        title="Actual Enrollment", labels=["Enrolled", "Not Enrolled"], 
     )
 
     if save_path:
@@ -230,10 +195,10 @@ def plot_likelihood_distribution(y_true, y_probs, save_path=None):
         palette="viridis",
         dodge=False,  # Ensure one box per category
     )
-    plt.title("Box Plot of Predicted Likelihoods by Actual Interview Conducting")
-    plt.xlabel("Actual Interview Conducting")
+    plt.title("Box Plot of Predicted Likelihoods by Actual Enrollment")
+    plt.xlabel("Actual Enrollment")
     plt.ylabel("Predicted Likelihood")
-    plt.xticks([0, 1], ["Not Conducted", "Conducted"])
+    plt.xticks([0, 1], ["Not Enrollment", "Enrollment"])
     # Remove legends from box plot
     if box_plot.legend_ is not None:
         box_plot.legend_.remove()
@@ -322,6 +287,7 @@ def classification_model(
         "hdyhau",
         "prior_education",
         "reason_for_applying",
+        "course_completion_status",
         "gender",
         "ethnicity",
         "country",
@@ -434,9 +400,9 @@ feature_columns = [
     "university_caliber",
     "prior_education",
     "reason_for_applying",
+    "course_completion_status",
     "character_count",
-    #"tuition",
-    "total_payment",
+    "tuition",
     "management_leadership_experience",
     "tuition_benefits",
     "english_proficient",

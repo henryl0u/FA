@@ -35,7 +35,7 @@ for df in [training_data, pred66_data, pred67_data]:
     df["country"] = df["country"].fillna("NA")
 
 for df in [training_data, pred66_data, pred67_data]:
-    df = df[df["tuition"] > 0]
+    df = df[df["payment_amount"] > 0]
 
 
 # Define values for mapping
@@ -112,8 +112,8 @@ def plot_regression_diagnostics(actual, predicted, pred_name, save_path):
 
     if pred_name:
         print(f"\nResiduals for {pred_name}:")
-    print("Sum of predicted tuition:", np.sum(predicted))
-    print("Sum of actual tuition:", np.sum(actual))
+    print("Sum of predicted payment:", np.sum(predicted))
+    print("Sum of actual payment:", np.sum(actual))
     print("Sum of residuals:", residuals.sum())
 
     # Create a DataFrame with actual outcomes, predicted values, and residuals
@@ -147,9 +147,9 @@ def plot_regression_diagnostics(actual, predicted, pred_name, save_path):
         color="red",
         lw=2,
     )
-    plt.title("Actual vs Predicted Tuition")
-    plt.xlabel("Actual Tuition")
-    plt.ylabel("Predicted Tuition")
+    plt.title("Actual vs Predicted Payment")
+    plt.xlabel("Actual Payment")
+    plt.ylabel("Predicted Payment")
     plt.grid(True)
 
     if save_path:
@@ -230,7 +230,7 @@ def tuition_prediction(model, pred_data, features):
     predicted_tuition = model.predict(X_test)
 
     prediction_df = pred_data.copy()
-    prediction_df["predicted_tuition"] = predicted_tuition
+    prediction_df["predicted_payment"] = predicted_tuition
 
     return prediction_df
 
@@ -256,7 +256,7 @@ feature_columns = [
     "english_proficient",
 ]
 
-target_column = "tuition"
+target_column = "payment_amount"
 param_grid = {}
 
 print("Regression Model:")
@@ -274,17 +274,17 @@ def calculate_tuition_differences(
     pred_data, pred_name, actual_col, predicted_col, training_data, base_path
 ):
     # Calculate the direct difference
-    pred_data["tuition_difference"] = pred_data[predicted_col] - pred_data[actual_col]
+    pred_data["payment_difference"] = pred_data[predicted_col] - pred_data[actual_col]
 
     # Round predicted values to the nearest tuition value in training data
     unique_tuition_values = training_data[actual_col].unique()
-    pred_data["rounded_predicted_tuition"] = pred_data[predicted_col].apply(
+    pred_data["rounded_predicted_payment"] = pred_data[predicted_col].apply(
         lambda x: min(unique_tuition_values, key=lambda y: abs(y - x))
     )
 
     # Calculate the difference using the rounded predictions
-    pred_data["tuition_difference_rounded"] = (
-        pred_data["rounded_predicted_tuition"] - pred_data[actual_col]
+    pred_data["payment_difference_rounded"] = (
+        pred_data["rounded_predicted_payment"] - pred_data[actual_col]
     )
 
     # Move calculated columns to the front
@@ -330,11 +330,11 @@ def calculate_tuition_differences(
 
 
 pred66_data = calculate_tuition_differences(
-    pred66_data, "66", "tuition", "predicted_tuition", training_data, base_path
+    pred66_data, "66", "payment_amount", "predicted_tuition", training_data, base_path
 )
 
 pred67_data = calculate_tuition_differences(
-    pred67_data, "67", "tuition", "predicted_tuition", training_data, base_path
+    pred67_data, "67", "payment_amount", "predicted_tuition", training_data, base_path
 )
 
 

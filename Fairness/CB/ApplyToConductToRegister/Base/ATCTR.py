@@ -9,6 +9,7 @@ from sklearn.metrics import (
     ConfusionMatrixDisplay,
 )
 import os
+import numpy as np
 from sklearn.metrics import (
     classification_report,
     accuracy_score,
@@ -38,50 +39,33 @@ for df in [pred66_data, pred67_data]:
     df["country"] = df["country"].fillna("NA")
 
 
-def replace_nulls_with_nearest_tuition(target_data, source_data):
-    for index, row in target_data.iterrows():
-        if pd.isnull(row["tuition"]):
-            # Filter out rows in source_data where 'tuition' is NA
-            valid_tuitions = source_data["tuition"].dropna()
-            if not valid_tuitions.empty:
-                # Calculate the absolute difference between 'tuition_predicted' and valid tuitions
-                nearest_index = (
-                    (valid_tuitions - row["tuition_predicted"]).abs().idxmin()
-                )
-                # Get the nearest tuition from source_data
-                nearest_tuition = source_data.at[nearest_index, "tuition"]
-                # Replace the null in target_data with the nearest tuition from source_data
-                target_data.at[index, "tuition"] = nearest_tuition
-
-
-# Apply the function to each DataFrame, using training_data as the source for replacements
-replace_nulls_with_nearest_tuition(pred66_data, training_data)
-replace_nulls_with_nearest_tuition(pred67_data, training_data)
-
-# # Handle null tuition values (loss due to cost from advertising)
-# pred66_data["tuition"] = pred66_data["tuition"].fillna(0)
-# pred67_data["tuition"] = pred67_data["tuition"].fillna(0)
-
-# pred66_data.rename(columns={"tuition": "tuition_actual"}, inplace=True)
-# pred67_data.rename(columns={"tuition": "tuition_actual"}, inplace=True)
-
-
 # def replace_nulls_with_nearest_tuition(target_data, source_data):
 #     for index, row in target_data.iterrows():
-#         # Filter out rows in source_data where 'tuition' is NA
-#         valid_tuitions = source_data["tuition"].dropna()
-#         if not valid_tuitions.empty:
-#             # Calculate the absolute difference between 'tuition_predicted' and valid tuitions
-#             nearest_index = (valid_tuitions - row["tuition_predicted"]).abs().idxmin()
-#             # Get the nearest tuition from source_data
-#             nearest_tuition = source_data.at[nearest_index, "tuition"]
-#             # Replace the null in target_data with the nearest tuition from source_data
-#             target_data.at[index, "tuition"] = nearest_tuition
+#         if pd.isnull(row["tuition"]):
+#             # Filter out rows in source_data where 'tuition' is NA
+#             valid_tuitions = source_data["tuition"].dropna()
+#             if not valid_tuitions.empty:
+#                 # Calculate the absolute difference between 'tuition_predicted' and valid tuitions
+#                 nearest_index = (
+#                     (valid_tuitions - row["tuition_predicted"]).abs().idxmin()
+#                 )
+#                 # Get the nearest tuition from source_data
+#                 nearest_tuition = source_data.at[nearest_index, "tuition"]
+#                 # Replace the null in target_data with the nearest tuition from source_data
+#                 target_data.at[index, "tuition"] = nearest_tuition
 
 
-# # Apply the function to each DataFrame, using ev_data as the source for replacements
+# # Apply the function to each DataFrame, using training_data as the source for replacements
 # replace_nulls_with_nearest_tuition(pred66_data, training_data)
 # replace_nulls_with_nearest_tuition(pred67_data, training_data)
+
+# Handle null tuition values (loss due to cost from advertising)
+pred66_data["tuition"] = pred66_data["tuition"].fillna(0)
+pred67_data["tuition"] = pred67_data["tuition"].fillna(0)
+
+pred66_data.rename(columns={"tuition": "tuition_actual"}, inplace=True)
+pred67_data.rename(columns={"tuition": "tuition_actual"}, inplace=True)
+
 
 # Define values for mapping
 mappings = {
@@ -125,11 +109,52 @@ def apply_mappings(data, mappings):
 pred66_data = apply_mappings(pred66_data, mappings)
 pred67_data = apply_mappings(pred67_data, mappings)
 
+model_tuition_58_65 = joblib.load("./Fairness/CB/Tuition/Base/models/model.pkl")
+
+features_tuition = [
+    "age",
+    "company_caliber",
+    "years_full_time_experience",
+    "role",
+    "most_recent_role",
+    "industry",
+    "gender",
+    "ethnicity",
+    "country",
+    "hdyhau",
+    "salary_range",
+    "university_caliber",
+    "prior_education",
+    "reason_for_applying",
+    "character_count",
+    "management_leadership_experience",
+    "tuition_benefits",
+    "english_proficient",
+]
+
+def tuition_prediction(model, pred_data, training_data, features):
+    X_test = pred_data[features]
+    predicted_tuition = model.predict(X_test)
+
+    prediction_df = pred_data.copy()
+    unique_tuition_values = training_data["tuition"].unique()
+    
+    # Ensure we iterate over individual predicted values
+    prediction_df["tuition"] = [
+        min(unique_tuition_values, key=lambda y: abs(y - pred)) for pred in predicted_tuition
+    ]
+
+    return prediction_df
+
+
+pred66_data = tuition_prediction(model_tuition_58_65, pred66_data, training_data, features_tuition)
+pred67_data = tuition_prediction(model_tuition_58_65, pred67_data, training_data, features_tuition)
+
 
 # Load your pretrained models and scalers
 model_ATC_58_65 = joblib.load("./Fairness/CB/ApplyToConduct/Base/models/model_clf.pkl")
 
-features = [
+features_ATC = [
     "age",
     "company_caliber",
     "years_full_time_experience",
@@ -167,8 +192,8 @@ def conduct_predictions(
     return output
 
 
-pred66_data = conduct_predictions(model_ATC_58_65, pred66_data, features)
-pred67_data = conduct_predictions(model_ATC_58_65, pred67_data, features)
+pred66_data = conduct_predictions(model_ATC_58_65, pred66_data, features_ATC)
+pred67_data = conduct_predictions(model_ATC_58_65, pred67_data, features_ATC)
 
 
 def plot_confusion_matrix(y_true, y_pred, clf, save_path=None):
@@ -224,7 +249,7 @@ def likelihood_prediction(calibrated_clf, pred_data, features):
     return likelihood_df
 
 
-feature_columns = [
+features_CTR = [
     "age",
     "company_caliber",
     "years_full_time_experience",
@@ -249,16 +274,16 @@ feature_columns = [
 calibrated_clf = joblib.load(f"Fairness/CB/ConductToRegister/Base/models/model_clf.pkl")
 
 pred66_data = likelihood_prediction(
-    calibrated_clf, pred66_data, feature_columns
+    calibrated_clf, pred66_data, features_CTR
 )
 pred67_data = likelihood_prediction(
-    calibrated_clf, pred67_data, feature_columns
+    calibrated_clf, pred67_data, features_CTR
 )
 
 
 def enrollment_prediction(pred_data, pred_name, base_path):
     likelihood = pred_data["enrollment_likelihood"] * pred_data["interview_likelihood"]
-    pred_data["predicted_enrollment"] = pred_data["enrollment_likelihood"] > 0.6
+    pred_data["predicted_enrollment"] = (pred_data["enrollment_likelihood"] > 0.7) & (pred_data["interview_likelihood"] > 0.7)
     pred_data["predicted_enrollment"] = pred_data["predicted_enrollment"].astype(bool)
 
     # Columns you want to move to the front

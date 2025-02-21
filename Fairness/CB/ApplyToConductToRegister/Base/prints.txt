@@ -2,33 +2,33 @@ Predictions for 66:
 Classification Report:
               precision    recall  f1-score   support
 
-       False       0.96      0.99      0.97       883
-        True       0.91      0.74      0.82       144
+       False       0.90      0.88      0.89       883
+        True       0.36      0.40      0.38       144
 
-    accuracy                           0.95      1027
-   macro avg       0.94      0.87      0.90      1027
-weighted avg       0.95      0.95      0.95      1027
+    accuracy                           0.81      1027
+   macro avg       0.63      0.64      0.63      1027
+weighted avg       0.82      0.81      0.82      1027
 
-Accuracy: 0.9542356377799416
-Balanced Accuracy: 0.8658652636214924
-F1 Score: 0.8199233716475096
-ROC AUC Score: 0.9433434000251668
+Accuracy: 0.8140214216163584
+Balanced Accuracy: 0.6419324902478922
+F1 Score: 0.3778501628664495
+ROC AUC Score: 0.7399883603875677
 
 
 Predictions for 67:
 Classification Report:
               precision    recall  f1-score   support
 
-       False       0.97      0.99      0.98      3733
-        True       0.95      0.77      0.85       462
+       False       0.92      0.89      0.90      3733
+        True       0.28      0.35      0.31       462
 
-    accuracy                           0.97      4195
-   macro avg       0.96      0.88      0.92      4195
-weighted avg       0.97      0.97      0.97      4195
+    accuracy                           0.83      4195
+   macro avg       0.60      0.62      0.61      4195
+weighted avg       0.85      0.83      0.84      4195
 
-Accuracy: 0.9697258641239571
-Balanced Accuracy: 0.8805720130391976
-F1 Score: 0.8479041916167664
-ROC AUC Score: 0.954960032377659
+Accuracy: 0.8300357568533969
+Balanced Accuracy: 0.6190589257157701
+F1 Score: 0.3111111111111111
+ROC AUC Score: 0.7014210452463868
 
 

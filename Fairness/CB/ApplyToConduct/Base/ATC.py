@@ -64,10 +64,6 @@ mappings = {
         "Top 5 percent": 2,
         "Beyond": 1,
     },
-    "course_completion_status": {
-        "Before Interview": 2,
-        "No Completion Yet": 1,
-    },
     "management_leadership_experience": {
         "Yes": 2,
         "No": 1,
@@ -291,6 +287,7 @@ def classification_model(
         "hdyhau",
         "prior_education",
         "reason_for_applying",
+        "course_completion_status",
         "gender",
         "ethnicity",
         "country",
@@ -400,6 +397,7 @@ feature_columns = [
     "university_caliber",
     "prior_education",
     "reason_for_applying",
+    "course_completion_status",
     "character_count",
     "management_leadership_experience",
     "tuition_benefits",
