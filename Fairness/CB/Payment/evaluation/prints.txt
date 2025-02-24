@@ -4,12 +4,14 @@ Validation MAE: 1433.89
 Validation RMSE: 2074.00
 Validation R² Score: 0.5649
 
-Residuals for Validation:
+Residuals for val:
 Sum of predicted payment: 11268300
 Sum of actual payment: 11186900
 Sum of residuals: 22600.0
+Relative error: 0.002020220078842217
 
 Residuals for 60:
 Sum of predicted payment: 11924250
 Sum of actual payment: 10469200
 Sum of residuals: -1455050
+Relative error: -0.13898387651396477

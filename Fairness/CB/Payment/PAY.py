@@ -103,7 +103,7 @@ def plot_feature_importance(clf, X_train, save_path=None):
     plt.show()
 
 
-def plot_regression_diagnostics(actual, predicted, pred_name, training_data, save_path):
+def plot_regression_diagnostics(pred_data, actual, predicted, pred_name, training_data, save_path):
 
     # Round predicted values to the nearest tuition value in training data
     unique_tuition_values = training_data.unique()
@@ -119,6 +119,7 @@ def plot_regression_diagnostics(actual, predicted, pred_name, training_data, sav
     print("Sum of predicted payment:", np.sum(rounded_payment))
     print("Sum of actual payment:", np.sum(actual))
     print("Sum of residuals:", residuals.sum())
+    print("Relative error:", residuals.sum() / np.sum(actual))
 
     # Create a DataFrame with actual outcomes, predicted values, and residuals
     results_df = pd.DataFrame(
@@ -169,6 +170,16 @@ def plot_regression_diagnostics(actual, predicted, pred_name, training_data, sav
     if save_path:
         plt.savefig(f"{save_path}/residuals_boxplot_{pred_name}.png")
     plt.show()
+
+    # Collect the results in a DataFrame for better visualization
+    df = pred_data.copy()  # Keep all original features
+    df["rounded_payment_amount"] = rounded_payment  # Add the predicted likelihood
+
+    # Save the likelihood predictions to an Excel file for later use
+    df.to_excel(
+        f"{save_path}/payment_{pred_name}.xlsx",
+        index=False,
+    )
 
 
 def save_model(model, base_path):
@@ -232,7 +243,7 @@ def regression_model(data, features, target, param_grid, base_path):
 
     save_dir = f"{base_path}/prediction/val"
     os.makedirs(save_dir, exist_ok=True)
-    plot_regression_diagnostics(y_val, y_val_pred, "Validation", y, save_path=save_dir)
+    plot_regression_diagnostics(X_val, y_val, y_val_pred, "val", y, save_path=save_dir)
 
     return best_model
 
@@ -244,7 +255,7 @@ def tuition_prediction(model, pred_data, pred_name, training_data, features, bas
     save_dir = f"{base_path}/prediction/{pred_name}"
     os.makedirs(save_dir, exist_ok=True)
 
-    plot_regression_diagnostics(pred_data["payment_amount"], predicted_tuition, pred_name, training_data, save_dir)
+    plot_regression_diagnostics(pred_data, pred_data["payment_amount"], predicted_tuition, pred_name, training_data, save_dir)
 
 
 feature_columns = [

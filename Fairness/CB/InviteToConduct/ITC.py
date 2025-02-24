@@ -132,7 +132,7 @@ def plot_feature_importance(clf, X_train, save_path=None):
 def plot_roc_curve(y_true, y_scores, save_path=None):
     fpr, tpr, thresholds = roc_curve(y_true, y_scores)
     roc_auc = auc(fpr, tpr)
-    
+
     # Calculate the optimal threshold
     optimal_idx = np.argmax(tpr - fpr)
     optimal_threshold = thresholds[optimal_idx]
@@ -142,9 +142,22 @@ def plot_roc_curve(y_true, y_scores, save_path=None):
     plt.figure(figsize=(10, 6))
     plt.plot(fpr, tpr, color="blue", lw=2, label=f"ROC curve (area = {roc_auc:.2f})")
     plt.plot([0, 1], [0, 1], color="gray", linestyle="--")
-    plt.scatter(optimal_fpr, optimal_tpr, color="red", marker="o", label=f'Optimal Threshold: {optimal_threshold:.2f}')
-    plt.text(optimal_fpr, optimal_tpr, f'Threshold: {optimal_threshold:.2f}', fontsize=12, verticalalignment='bottom', horizontalalignment='right')
-    
+    plt.scatter(
+        optimal_fpr,
+        optimal_tpr,
+        color="red",
+        marker="o",
+        label=f"Optimal Threshold: {optimal_threshold:.2f}",
+    )
+    plt.text(
+        optimal_fpr,
+        optimal_tpr,
+        f"Threshold: {optimal_threshold:.2f}",
+        fontsize=12,
+        verticalalignment="bottom",
+        horizontalalignment="right",
+    )
+
     plt.xlim([0.0, 1.0])
     plt.ylim([0.0, 1.05])
     plt.xlabel("False Positive Rate")
@@ -152,7 +165,7 @@ def plot_roc_curve(y_true, y_scores, save_path=None):
     plt.title("Receiver Operating Characteristic (ROC) Curve")
     plt.legend(loc="lower right")
     plt.grid()
-    
+
     if save_path:
         plt.savefig(f"{save_path}/roc_curve.png")
     plt.show()
@@ -269,6 +282,48 @@ def plot_reliability_curve(y_true, y_probs, save_path=None):
     plt.show()
 
 
+def best_threshold_combined(y_true, y_probs, alpha=0.6):
+    thresholds = np.arange(0, 1.01, 0.01)  # Define thresholds from 0 to 1
+    combined_scores = []
+
+    # Calculate combined score for each threshold
+    for threshold in thresholds:
+        predictions = (y_probs >= threshold).astype(int)
+        f1 = f1_score(y_true, predictions)
+        bal_acc = balanced_accuracy_score(y_true, predictions)
+
+        # Weighted average of F1 and Balanced Accuracy
+        combined_score = alpha * f1 + (1 - alpha) * bal_acc
+        combined_scores.append(combined_score)
+
+    # Find the optimal threshold
+    best_index = np.argmax(combined_scores)
+    best_threshold = thresholds[best_index]
+    max_combined_score = combined_scores[best_index]
+
+    f1_scores = []
+    balanced_accuracies = []
+
+    for threshold in thresholds:
+        predictions = (y_probs >= threshold).astype(int)
+        f1_scores.append(f1_score(y_true, predictions))
+        balanced_accuracies.append(balanced_accuracy_score(y_true, predictions))
+
+    # Plotting the two metrics
+    plt.figure(figsize=(10, 6))
+    plt.plot(thresholds, f1_scores, label="F1 Score", color="blue")
+    plt.plot(thresholds, balanced_accuracies, label="Balanced Accuracy", color="orange")
+    plt.title("F1 Score and Balanced Accuracy by Threshold")
+    plt.xlabel("Threshold")
+    plt.ylabel("Score")
+    plt.axvline(best_threshold, linestyle="--", color="red")
+    plt.legend()
+    plt.grid()
+    plt.show()
+
+    return best_threshold, max_combined_score
+
+
 def save_model(model, base_path):
     joblib.dump(model, f"{base_path}/model/model.pkl")
 
@@ -303,6 +358,7 @@ def classification_model(
             early_stopping_rounds=50,
             silent=True,
             allow_writing_files=False,
+            auto_class_weights="Balanced",
             cat_features=categorical_features,
         ),
         param_grid=param_grid,
@@ -321,8 +377,14 @@ def classification_model(
     else:
         calibrated_clf = best_clf
 
-    y_val_pred = calibrated_clf.predict(X_val)
     y_val_probs = calibrated_clf.predict_proba(X_val)[:, 1]
+    best_threshold, max_combined_score = best_threshold_combined(y_val, y_val_probs)
+
+    # print(f"Best Threshold: {best_threshold:.2f}")
+    # print(f"Maximum Combined Score: {max_combined_score:.4f}")
+
+    # y_val_pred = (y_val_probs >= best_threshold).astype(int)
+    y_val_pred = calibrated_clf.predict(X_val)
 
     val_accuracy = accuracy_score(y_val, y_val_pred)
     val_balanced_accuracy = balanced_accuracy_score(y_val, y_val_pred)
@@ -370,12 +432,14 @@ def classification_model(
     return calibrated_clf
 
 
-def likelihood_prediction(calibrated_clf, pred_data, pred_name, features, base_path):
+def likelihood_prediction(
+    calibrated_clf, pred_data, pred_name, features, base_path
+):
     X_pred = pred_data[features]
 
-    predictions = calibrated_clf.predict(X_pred)
-
     likelihood_calibrated = calibrated_clf.predict_proba(X_pred)[:, 1]
+    predictions = calibrated_clf.predict(X_pred)
+    #predictions = (likelihood_calibrated >= best_threshold).astype(int)
 
     likelihood_df = pred_data.copy()
     likelihood_df["interview_likelihood"] = likelihood_calibrated
@@ -386,8 +450,10 @@ def likelihood_prediction(calibrated_clf, pred_data, pred_name, features, base_p
     likelihood_df.to_excel(
         f"{save_dir}/interview_likelihood_{pred_name}.xlsx", index=False
     )
-    plot_confusion_matrix(pred_data["did_interview"], predictions, calibrated_clf, save_path=save_dir)
-    
+    plot_confusion_matrix(
+        pred_data["did_interview"], predictions, calibrated_clf, save_path=save_dir
+    )
+
     plot_likelihood_distribution(
         pred_data["did_interview"], likelihood_calibrated, save_path=save_dir
     )
@@ -416,13 +482,12 @@ feature_columns = [
 
 target_column = "did_interview"
 
-param_grid = {
-}
+param_grid = {}
 
 # Main code for classification model
 print("Classification Model:")
 
-calibrated_clf = classification_model(
+calibrated_clf= classification_model(
     training_data,
     feature_columns,
     target_column,
@@ -435,7 +500,7 @@ save_model(calibrated_clf, base_path)
 
 # Predict enrollment likelihood for multiple datasets
 prediction_datasets = {
-    "pred60": pred60_data,
+    "60": pred60_data,
 }
 
 for pred_name, pred_data in prediction_datasets.items():

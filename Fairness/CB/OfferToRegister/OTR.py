@@ -269,6 +269,48 @@ def plot_reliability_curve(y_true, y_probs, save_path=None):
     plt.show()
 
 
+def best_threshold_combined(y_true, y_probs, alpha=0.6):
+    thresholds = np.arange(0, 1.01, 0.01)  # Define thresholds from 0 to 1
+    combined_scores = []
+
+    # Calculate combined score for each threshold
+    for threshold in thresholds:
+        predictions = (y_probs >= threshold).astype(int)
+        f1 = f1_score(y_true, predictions)
+        bal_acc = balanced_accuracy_score(y_true, predictions)
+
+        # Weighted average of F1 and Balanced Accuracy
+        combined_score = alpha * f1 + (1 - alpha) * bal_acc
+        combined_scores.append(combined_score)
+
+    # Find the optimal threshold
+    best_index = np.argmax(combined_scores)
+    best_threshold = thresholds[best_index]
+    max_combined_score = combined_scores[best_index]
+
+    f1_scores = []
+    balanced_accuracies = []
+
+    for threshold in thresholds:
+        predictions = (y_probs >= threshold).astype(int)
+        f1_scores.append(f1_score(y_true, predictions))
+        balanced_accuracies.append(balanced_accuracy_score(y_true, predictions))
+
+    # Plotting the two metrics
+    plt.figure(figsize=(10, 6))
+    plt.plot(thresholds, f1_scores, label="F1 Score", color="blue")
+    plt.plot(thresholds, balanced_accuracies, label="Balanced Accuracy", color="orange")
+    plt.title("F1 Score and Balanced Accuracy by Threshold")
+    plt.xlabel("Threshold")
+    plt.ylabel("Score")
+    plt.axvline(best_threshold, linestyle="--", color="red")
+    plt.legend()
+    plt.grid()
+    plt.show()
+
+    return best_threshold, max_combined_score
+
+
 def save_model(model, base_path):
     joblib.dump(model, f"{base_path}/model/model.pkl")
 
@@ -322,8 +364,14 @@ def classification_model(
     else:
         calibrated_clf = best_clf
 
-    y_val_pred = calibrated_clf.predict(X_val)
     y_val_probs = calibrated_clf.predict_proba(X_val)[:, 1]
+    best_threshold, max_combined_score = best_threshold_combined(y_val, y_val_probs)
+
+    print(f"Best Threshold: {best_threshold:.2f}")
+    print(f"Maximum Combined Score: {max_combined_score:.4f}")
+
+    y_val_pred = (y_val_probs >= best_threshold).astype(int)
+    # y_val_pred = calibrated_clf.predict(X_val)
 
     val_accuracy = accuracy_score(y_val, y_val_pred)
     val_balanced_accuracy = balanced_accuracy_score(y_val, y_val_pred)
@@ -368,14 +416,15 @@ def classification_model(
     # Plot the distribution of predicted likelihoods
     plot_likelihood_distribution(y_val, y_val_probs, save_path=save_dir)
 
-    return calibrated_clf
+    return calibrated_clf, best_threshold   
 
 
-def likelihood_prediction(calibrated_clf, pred_data, pred_name, features, base_path):
+def likelihood_prediction(calibrated_clf, pred_data, pred_name, features, best_threshold, base_path):
     X_test = pred_data[features]
 
-    predictions = calibrated_clf.predict(X_test)
     likelihood_calibrated = calibrated_clf.predict_proba(X_test)[:, 1]
+    # predictions = calibrated_clf.predict(X_test)
+    predictions = (likelihood_calibrated >= best_threshold).astype(int)
 
     likelihood_df = pred_data.copy()
     likelihood_df["enrollment_likelihood"] = likelihood_calibrated
@@ -423,7 +472,7 @@ param_grid = {}
 
 # Main code for classification model
 print("Classification Model:")
-calibrated_clf = classification_model(
+calibrated_clf, best_threshold = classification_model(
     training_data,
     feature_columns,
     target_column,
@@ -436,12 +485,12 @@ save_model(calibrated_clf, base_path)
 
 # Predict enrollment likelihood for multiple datasets
 prediction_datasets = {
-    "pred60": pred60_data,
+    "60": pred60_data,
 }
 
 for pred_name, pred_data in prediction_datasets.items():
     likelihood_prediction(
-        calibrated_clf, pred_data, pred_name, feature_columns, base_path
+        calibrated_clf, pred_data, pred_name, feature_columns, best_threshold, base_path
     )
 
 # Change standard output back to default
