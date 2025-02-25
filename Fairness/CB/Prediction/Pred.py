@@ -2,12 +2,6 @@ import sys
 import pandas as pd
 import joblib
 import matplotlib.pyplot as plt
-from sklearn.metrics import (
-    auc,
-    roc_curve,
-    confusion_matrix,
-    ConfusionMatrixDisplay,
-)
 import os
 import numpy as np
 from sklearn.metrics import (
@@ -16,6 +10,10 @@ from sklearn.metrics import (
     balanced_accuracy_score,
     f1_score,
     roc_auc_score,
+    auc,
+    roc_curve,
+    confusion_matrix,
+    ConfusionMatrixDisplay,
 )
 
 base_path = "./Fairness/CB/Prediction"
@@ -38,11 +36,14 @@ for df in [training_data, pred60_data]:
     df["country"] = df["country"].fillna("NA")
 
 # Handle null tuition values (loss due to cost from advertising)
-pred60_data["payment_amount"] = pred60_data["payment_amount"].fillna(training_data["base_payment"])
+pred60_data["payment_amount"] = pred60_data["payment_amount"].fillna(
+    training_data["base_payment"]
+)
 pred60_data.rename(columns={"payment_amount": "payment_amount_actual"}, inplace=True)
+pred60_data["payment_amount"] = pred60_data["predicted_payment"]
 
 
-# Define values for mapping
+# # Define values for mapping
 mappings = {
     "company_caliber": {"Average": 1, "Self-Employed": 1, "Good": 2, "Elite": 3},
     "years_full_time_experience": {
@@ -80,47 +81,47 @@ def apply_mappings(data, mappings):
         data[column] = data[column].map(mapping)
     return data
 
+
 pred60_data = apply_mappings(pred60_data, mappings)
 
-model_payment = joblib.load("./Fairness/CB/Payment/model/model.pkl")
+# model_payment = joblib.load("./Fairness/CB/Payment/model/model.pkl")
 
-features_payment = [
-    "age",
-    "company_caliber",
-    "years_full_time_experience",
-    "role",
-    "most_recent_role",
-    "industry",
-    "gender",
-    "ethnicity",
-    "country",
-    "hdyhau",
-    "salary_range",
-    "prior_education",
-    "reason_for_applying",
-    "character_count",
-    "management_leadership_experience",
-    "tuition_benefits",
-    "english_proficient",
-]
+# features_payment = [
+#     "age",
+#     "company_caliber",
+#     "years_full_time_experience",
+#     "role",
+#     "most_recent_role",
+#     "industry",
+#     "gender",
+#     "ethnicity",
+#     "country",
+#     "hdyhau",
+#     "salary_range",
+#     "prior_education",
+#     "reason_for_applying",
+#     "character_count",
+#     "management_leadership_experience",
+#     "tuition_benefits",
+#     "english_proficient",
+# ]
 
-def tuition_prediction(model, pred_data, training_data, features):
-    X_test = pred_data[features]
-    predicted_tuition = model.predict(X_test)
+# def tuition_prediction(model, pred_data, training_data, features):
+#     X_test = pred_data[features]
+#     predicted_tuition = model.predict(X_test)
 
-    prediction_df = pred_data.copy()
-    unique_tuition_values = training_data["payment_amount"].unique()
-    
-    # Ensure we iterate over individual predicted values
-    prediction_df["payment_amount"] = [
-        min(unique_tuition_values, key=lambda y: abs(y - pred)) for pred in predicted_tuition
-    ]
+#     prediction_df = pred_data.copy()
+#     unique_tuition_values = training_data["payment_amount"].unique()
 
-    return prediction_df
+#     # Ensure we iterate over individual predicted values
+#     prediction_df["payment_amount"] = [
+#         min(unique_tuition_values, key=lambda y: abs(y - pred)) for pred in predicted_tuition
+#     ]
+
+#     return prediction_df
 
 
-pred60_data = tuition_prediction(model_payment, pred60_data, training_data, features_payment)
-
+# pred60_data = tuition_prediction(model_payment, pred60_data, training_data, features_payment)
 
 # Load your pretrained models and scalers
 model_ITC = joblib.load("./Fairness/CB/InviteToConduct/model/model.pkl")
@@ -161,6 +162,7 @@ def conduct_predictions(
     output["interview_likelihood"] = predictions
 
     return output
+
 
 pred60_data = conduct_predictions(
     model_ITC,
@@ -210,6 +212,7 @@ def plot_roc_curve(y_true, y_scores, save_path=None):
 
     return roc_auc
 
+
 model_OTR = joblib.load(f"Fairness/CB/OfferToRegister/model/model.pkl")
 
 features_OTR = [
@@ -234,6 +237,7 @@ features_OTR = [
     "english_proficient",
 ]
 
+
 def likelihood_prediction(calibrated_clf, pred_data, features):
     X_test = pred_data[features]
 
@@ -244,9 +248,11 @@ def likelihood_prediction(calibrated_clf, pred_data, features):
 
     return likelihood_df
 
+
 pred60_data = likelihood_prediction(model_OTR, pred60_data, features_OTR)
 
-def optimal_enrollment_threshold(y_true, y_probs, metric='f1'):
+
+def optimal_enrollment_threshold(y_true, y_probs, metric="f1"):
     thresholds = np.arange(0, 1.01, 0.01)
     best_threshold = 0.5
     best_score = 0
@@ -254,11 +260,11 @@ def optimal_enrollment_threshold(y_true, y_probs, metric='f1'):
     for threshold in thresholds:
         predictions = (y_probs >= threshold).astype(int)
 
-        if metric == 'f1':
+        if metric == "f1":
             score = f1_score(y_true, predictions)
-        elif metric == 'balanced_accuracy':
+        elif metric == "balanced_accuracy":
             score = balanced_accuracy_score(y_true, predictions)
-        
+
         # Check if we found a better score
         if score > best_score:
             best_score = score
@@ -270,16 +276,20 @@ def optimal_enrollment_threshold(y_true, y_probs, metric='f1'):
 def enrollment_prediction(model, pred_data, pred_name, base_path):
     enrollment_likelihood = pred_data["enrollment_likelihood"]
     interview_likelihood = pred_data["interview_likelihood"]
-    
+
     # Calculate combined likelihood
     likelihood = enrollment_likelihood * interview_likelihood
 
     # Finding the optimal threshold
-    optimal_threshold, _ = optimal_enrollment_threshold(pred_data["registered"], likelihood, metric='f1')
-    
+    optimal_threshold, _ = optimal_enrollment_threshold(
+        pred_data["registered"], likelihood, metric="f1"
+    )
+
     # Setting predicted enrollment based on the optimal threshold
     # pred_data["predicted_enrollment"] = (likelihood > optimal_threshold).astype(bool)
-    pred_data["predicted_enrollment"] = (pred_data["enrollment_likelihood"] > 0.6) & (pred_data["interview_likelihood"] > 0.5)
+    pred_data["predicted_enrollment"] = (pred_data["enrollment_likelihood"] > 0.45) & (
+        pred_data["interview_likelihood"] > 0.5
+    )
     pred_data["predicted_enrollment"] = pred_data["predicted_enrollment"].astype(bool)
 
     save_dir = f"{base_path}/{pred_name}"
@@ -298,14 +308,22 @@ def enrollment_prediction(model, pred_data, pred_name, base_path):
     print(f"Predictions for {pred_name}:")
     # Calculate and print classification report
     print("Classification Report:")
-    print(classification_report(pred_data["registered"], pred_data["predicted_enrollment"]))
+    print(
+        classification_report(
+            pred_data["registered"], pred_data["predicted_enrollment"]
+        )
+    )
 
     # Calculate and print accuracy score
-    accuracy = accuracy_score(pred_data["registered"], pred_data["predicted_enrollment"])
+    accuracy = accuracy_score(
+        pred_data["registered"], pred_data["predicted_enrollment"]
+    )
     print(f"Accuracy: {accuracy}")
 
     # Calculate and print balanced accuracy score
-    balanced_accuracy = balanced_accuracy_score(pred_data["registered"], pred_data["predicted_enrollment"])
+    balanced_accuracy = balanced_accuracy_score(
+        pred_data["registered"], pred_data["predicted_enrollment"]
+    )
     print(f"Balanced Accuracy: {balanced_accuracy}")
 
     # Calculate and print F1 score

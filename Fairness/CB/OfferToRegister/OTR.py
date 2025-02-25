@@ -269,8 +269,8 @@ def plot_reliability_curve(y_true, y_probs, save_path=None):
     plt.show()
 
 
-def best_threshold_combined(y_true, y_probs, alpha=0.6):
-    thresholds = np.arange(0, 1.01, 0.01)  # Define thresholds from 0 to 1
+def best_threshold_combined(y_true, y_probs, alpha=0.3, save_path=None):
+    thresholds = np.arange(0, 1.01, 0.05)  # Define thresholds from 0 to 1 with a step of 0.05
     combined_scores = []
 
     # Calculate combined score for each threshold
@@ -298,14 +298,24 @@ def best_threshold_combined(y_true, y_probs, alpha=0.6):
 
     # Plotting the two metrics
     plt.figure(figsize=(10, 6))
-    plt.plot(thresholds, f1_scores, label="F1 Score", color="blue")
-    plt.plot(thresholds, balanced_accuracies, label="Balanced Accuracy", color="orange")
+    plt.plot(thresholds, f1_scores, label="F1 Score", color="blue", marker='o')
+    plt.plot(thresholds, balanced_accuracies, label="Balanced Accuracy", color="orange", marker='o')
+    
+    # Adding threshold line
     plt.title("F1 Score and Balanced Accuracy by Threshold")
     plt.xlabel("Threshold")
     plt.ylabel("Score")
-    plt.axvline(best_threshold, linestyle="--", color="red")
+    plt.axvline(best_threshold, linestyle="--", color="red", label=f"Best Threshold: {best_threshold:.2f}")
+    
+    # Annotate the optimal threshold value
+    plt.text(best_threshold, max_combined_score, f'{best_threshold:.2f}', color='red', fontsize=12, verticalalignment='bottom')
+
+    # Set x-ticks for finer resolution
+    plt.xticks(np.arange(0, 1.05, 0.05))  # X-axis ticks every 0.05
     plt.legend()
     plt.grid()
+    if save_path:
+        plt.savefig(f"{save_path}/threshold_evaluation.png")
     plt.show()
 
     return best_threshold, max_combined_score
@@ -364,8 +374,11 @@ def classification_model(
     else:
         calibrated_clf = best_clf
 
+    save_dir = f"{base_path}/evaluation/"
+    os.makedirs(save_dir, exist_ok=True)
+
     y_val_probs = calibrated_clf.predict_proba(X_val)[:, 1]
-    best_threshold, max_combined_score = best_threshold_combined(y_val, y_val_probs)
+    best_threshold, max_combined_score = best_threshold_combined(y_val, y_val_probs, save_path=save_dir)
 
     print(f"Best Threshold: {best_threshold:.2f}")
     print(f"Maximum Combined Score: {max_combined_score:.4f}")
@@ -387,9 +400,6 @@ def classification_model(
     print(f"Validation Set F1 Score: {val_f1_score:.4f}")
     print(f"Validation Set ROC AUC Score: {val_roc_auc:.4f}\n")
     print(classification_report(y_val, y_val_pred))
-
-    save_dir = f"{base_path}/evaluation/"
-    os.makedirs(save_dir, exist_ok=True)
 
     plot_confusion_matrix(y_val, y_val_pred, calibrated_clf, save_path=save_dir)
     plot_feature_importance(best_clf, X_train, save_path=save_dir)

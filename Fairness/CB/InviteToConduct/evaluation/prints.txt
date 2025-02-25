@@ -1,4 +1,6 @@
 Classification Model:
+Best Threshold: 0.50
+Maximum Combined Score: 0.6735
 Best Parameters:
 
 Validation Set Accuracy: 0.6724
