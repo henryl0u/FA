@@ -64,11 +64,9 @@ def plot_confusion_matrix(y_true, y_pred, clf, save_path=None):
 
 
 def plot_feature_importance(clf, X_train, save_path=None):
-
-    # Compute feature importance
-    feature_importance = pd.Series(
-        clf.feature_importances_, index=X_train.columns
-    ).sort_values(ascending=False)
+    # Compute feature importance using CatBoost's method
+    feature_importance = clf.get_feature_importance()
+    feature_importance = pd.Series(feature_importance, index=X_train.columns).sort_values(ascending=False)
 
     # Plot feature importance
     plt.figure(figsize=(10, 6))
