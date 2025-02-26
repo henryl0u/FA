@@ -46,49 +46,6 @@ pred60_data = pd.read_excel("./Data/FA Test Data 60, Invite To Conduct.xlsx")
 for df in [training_data, pred60_data]:
     df["country"] = df["country"].fillna("NA")
 
-# Define values for mapping
-mappings = {
-    "company_caliber": {"Average": 1, "Self-Employed": 1, "Good": 2, "Elite": 3},
-    "years_full_time_experience": {
-        "0_1": 1,
-        "2_6": 1,
-        "3_6": 1,
-        "7_10": 2,
-        "11_15": 3,
-        "16_plus": 4,
-    },
-    # "academic_institution_caliber": {
-    #     "Not highly regarded": 1,
-    #     "Average": 2,
-    #     "Good": 3,
-    #     "Elite": 4,
-    # },
-    "management_leadership_experience": {
-        "Yes": 2,
-        "No": 1,
-    },
-    "tuition_benefits": {
-        "Eligible": 2,
-        "Unknown/Not eligible": 1,
-    },
-    "english_proficient": {
-        True: 2,
-        False: 1,
-    },
-}
-
-
-# Apply mapping to columns
-def apply_mappings(data, mappings):
-    for column, mapping in mappings.items():
-        data[column] = data[column].map(mapping)
-    return data
-
-
-training_data = apply_mappings(training_data, mappings)
-pred60_data = apply_mappings(pred60_data, mappings)
-
-
 def plot_confusion_matrix(y_true, y_pred, clf, save_path=None):
     cm = confusion_matrix(y_true, y_pred, labels=clf.classes_)
 
@@ -356,10 +313,14 @@ def classification_model(
         "hdyhau",
         "prior_education",
         "reason_for_applying",
-        # "course_completion_status",
+        "company_caliber",
         "gender",
         "ethnicity",
         "country",
+        "english_proficient",
+        "tuition_benefits",
+        "management_leadership_experience",
+        "years_full_time_experience",
     ]
 
     grid_search_cv = GridSearchCV(
@@ -483,7 +444,6 @@ feature_columns = [
     "salary_range",
     "prior_education",
     "reason_for_applying",
-    # "course_completion_status",
     "character_count",
     "management_leadership_experience",
     "tuition_benefits",

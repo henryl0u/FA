@@ -43,47 +43,6 @@ pred60_data.rename(columns={"payment_amount": "payment_amount_actual"}, inplace=
 pred60_data["payment_amount"] = pred60_data["predicted_payment"]
 
 
-# # Define values for mapping
-mappings = {
-    "company_caliber": {"Average": 1, "Self-Employed": 1, "Good": 2, "Elite": 3},
-    "years_full_time_experience": {
-        "0_1": 1,
-        "2_6": 1,
-        "3_6": 1,
-        "7_10": 2,
-        "11_15": 3,
-        "16_plus": 4,
-    },
-    # "academic_institution_caliber": {
-    #     "Not highly regarded": 1,
-    #     "Average": 2,
-    #     "Good": 3,
-    #     "Elite": 4,
-    # },
-    "management_leadership_experience": {
-        "Yes": 2,
-        "No": 1,
-    },
-    "tuition_benefits": {
-        "Eligible": 2,
-        "Unknown/Not eligible": 1,
-    },
-    "english_proficient": {
-        True: 2,
-        False: 1,
-    },
-}
-
-
-# Apply mapping to columns
-def apply_mappings(data, mappings):
-    for column, mapping in mappings.items():
-        data[column] = data[column].map(mapping)
-    return data
-
-
-pred60_data = apply_mappings(pred60_data, mappings)
-
 # model_payment = joblib.load("./Fairness/CB/Payment/model/model.pkl")
 
 # features_payment = [
@@ -140,7 +99,6 @@ features_ITC = [
     "salary_range",
     "prior_education",
     "reason_for_applying",
-    # "course_completion_status",
     "character_count",
     "management_leadership_experience",
     "tuition_benefits",
@@ -229,7 +187,6 @@ features_OTR = [
     "salary_range",
     "prior_education",
     "reason_for_applying",
-    # "course_completion_status",
     "character_count",
     "payment_amount",
     "management_leadership_experience",
@@ -256,15 +213,16 @@ def optimal_enrollment_threshold(y_true, y_probs, metric="f1"):
     thresholds = np.arange(0, 1.01, 0.01)
     best_threshold = 0.5
     best_score = 0
-
+    score = 0
+    
     for threshold in thresholds:
         predictions = (y_probs >= threshold).astype(int)
-
+    
         if metric == "f1":
             score = f1_score(y_true, predictions)
         elif metric == "balanced_accuracy":
             score = balanced_accuracy_score(y_true, predictions)
-
+    
         # Check if we found a better score
         if score > best_score:
             best_score = score
@@ -287,7 +245,7 @@ def enrollment_prediction(model, pred_data, pred_name, base_path):
 
     # Setting predicted enrollment based on the optimal threshold
     # pred_data["predicted_enrollment"] = (likelihood > optimal_threshold).astype(bool)
-    pred_data["predicted_enrollment"] = (pred_data["enrollment_likelihood"] > 0.45) & (
+    pred_data["predicted_enrollment"] = (pred_data["enrollment_likelihood"] > 0.55) & (
         pred_data["interview_likelihood"] > 0.5
     )
     pred_data["predicted_enrollment"] = pred_data["predicted_enrollment"].astype(bool)
