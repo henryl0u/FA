@@ -15,3 +15,38 @@ F1 Score: 0.6385264773599386
 ROC AUC Score: 0.8997408020214255
 
 
+Fairness Evaluation by Gender:
+
+Group               Accuracy  Balanced Accuracy   F1 Score  ROC AUC Score  Sample Size
+-------------------------------------------------------------------------------------
+female              0.8465    0.8102              0.6425    0.9035         1479
+male                0.8464    0.8156              0.6392    0.8966         1484
+other               0.8462    0.7905              0.5556    0.8929         104
+
+
+Fairness Evaluation by Ethnicity:
+
+Group               Accuracy  Balanced Accuracy   F1 Score  ROC AUC Score  Sample Size
+-------------------------------------------------------------------------------------
+African American    0.8380    0.7894              0.5756    0.8876         537
+Asian               0.8533    0.8299              0.7013    0.9082         627
+Caucasian           0.8449    0.8209              0.6468    0.9006         993
+Latin American      0.8667    0.8307              0.6981    0.9161         240
+Arab                0.8111    0.7133              0.4848    0.8569         180
+Unknown/Other       0.8531    0.8120              0.6044    0.8990         490
+
+
+Fairness Metrics by Gender:
+Gender  Demographic Parity  Equal Opportunity  Disparate Impact Ratio
+Female            0.246112           0.752768                1.163440
+  Male            0.248652           0.768061                1.175447
+ Other            0.211538           0.714286                1.000000
+
+Fairness Metrics by Ethnicity:
+       Ethnicity  Demographic Parity  Equal Opportunity  Disparate Impact Ratio
+African American            0.229050           0.719512                1.084975
+           Asian            0.272727           0.788321                1.291866
+       Caucasian            0.257805           0.783333                1.221180
+  Latin American            0.241667           0.770833                1.144737
+            Arab            0.211111           0.571429                1.000000
+   Unknown/Other            0.222449           0.753425                1.053706

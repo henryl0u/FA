@@ -214,15 +214,15 @@ def optimal_enrollment_threshold(y_true, y_probs, metric="f1"):
     best_threshold = 0.5
     best_score = 0
     score = 0
-    
+
     for threshold in thresholds:
         predictions = (y_probs >= threshold).astype(int)
-    
+
         if metric == "f1":
             score = f1_score(y_true, predictions)
         elif metric == "balanced_accuracy":
             score = balanced_accuracy_score(y_true, predictions)
-    
+
         # Check if we found a better score
         if score > best_score:
             best_score = score
@@ -295,6 +295,202 @@ def enrollment_prediction(model, pred_data, pred_name, base_path):
 
 
 enrollment_prediction(model_OTR, pred60_data, "60", base_path)
+
+
+def demographic_parity(pred_data, group_column, pred_column):
+    groups = pred_data[group_column].unique()
+    probabilities = {
+        group: np.mean(pred_data[pred_data[group_column] == group][pred_column])
+        for group in groups
+    }
+    return probabilities
+
+
+def equal_opportunity(pred_data, group_column, target_column, pred_column):
+    groups = pred_data[group_column].unique()
+    tpr = {
+        group: np.mean(
+            pred_data[
+                (pred_data[group_column] == group) & (pred_data[target_column] == 1)
+            ][pred_column]
+        )
+        for group in groups
+    }
+    return tpr
+
+
+def disparate_impact_ratio(pred_data, group_column, pred_column):
+    groups = pred_data[group_column].unique()
+    rates = {
+        group: np.mean(pred_data[pred_data[group_column] == group][pred_column])
+        for group in groups
+    }
+    base_group = min(rates, key=rates.get)
+    return {
+        group: rates[group] / rates[base_group]
+        for group in rates
+        if rates[base_group] > 0
+    }
+
+
+def fairness_evaluation(
+    pred_data, pred_name, group_column, target_column, pred_column, base_path=None
+):
+    # Ensure the save directory exists
+    save_dir = os.path.join(base_path, pred_name)
+    os.makedirs(save_dir, exist_ok=True)
+
+    groups = pred_data[group_column].unique()
+    fairness_results = {}
+
+    for group in groups:
+        group_data = pred_data[pred_data[group_column] == group]
+
+        accuracy = accuracy_score(group_data[target_column], group_data[pred_column])
+        balanced_acc = balanced_accuracy_score(
+            group_data[target_column], group_data[pred_column]
+        )
+        f1 = f1_score(group_data[target_column], group_data[pred_column])
+        roc_auc = roc_auc_score(
+            group_data[target_column],
+            group_data["enrollment_likelihood"] * group_data["interview_likelihood"],
+        )
+
+        fairness_results[group] = {
+            "Accuracy": accuracy,
+            "Balanced Accuracy": balanced_acc,
+            "F1 Score": f1,
+            "ROC AUC Score": roc_auc,
+            "Sample Size": len(group_data),
+        }
+
+        # Plot and save confusion matrix
+        cm = confusion_matrix(group_data[target_column], group_data[pred_column])
+        disp = ConfusionMatrixDisplay(
+            confusion_matrix=cm, display_labels=["Not Registered", "Registered"]
+        )
+        disp.plot()
+        plt.title(f"Confusion Matrix for {group}")
+
+        # Sanitize group name to avoid issues
+        safe_group = str(group).replace("/", "_").replace(" ", "_")
+        save_path = os.path.join(save_dir, f"confusion_matrix_{safe_group}.png")
+
+        plt.savefig(save_path)
+        plt.show()
+
+    return fairness_results
+
+
+# Example usage:
+fairness_metrics_gender = fairness_evaluation(
+    pred60_data, "60", "gender", "registered", "predicted_enrollment", base_path
+)
+fairness_metrics_ethnicity = fairness_evaluation(
+    pred60_data, "60", "ethnicity", "registered", "predicted_enrollment", base_path
+)
+
+demographic_parity_gender = demographic_parity(
+    pred60_data, "gender", "predicted_enrollment"
+)
+equal_opportunity_gender = equal_opportunity(
+    pred60_data, "gender", "registered", "predicted_enrollment"
+)
+disparate_impact_gender = disparate_impact_ratio(
+    pred60_data, "gender", "predicted_enrollment"
+)
+
+demographic_parity_ethnicity = demographic_parity(
+    pred60_data, "ethnicity", "predicted_enrollment"
+)
+equal_opportunity_ethnicity = equal_opportunity(
+    pred60_data, "ethnicity", "registered", "predicted_enrollment"
+)
+disparate_impact_ethnicity = disparate_impact_ratio(
+    pred60_data, "ethnicity", "predicted_enrollment"
+)
+
+# Print results in a formatted manner
+for category, metrics_dict in {
+    "Gender": fairness_metrics_gender,
+    "Ethnicity": fairness_metrics_ethnicity,
+}.items():
+    print(f"Fairness Evaluation by {category}:\n")
+    # Print header
+    print(f"{'Group':<20}{'Accuracy':<10}{'Balanced Accuracy':<20}{'F1 Score':<10}{'ROC AUC Score':<15}{'Sample Size'}")
+    print("-" * 85)
+    
+    for group, metrics in metrics_dict.items():
+        # Print results in a table format
+        print(f"{group:<20}{metrics['Accuracy']:<10.4f}{metrics['Balanced Accuracy']:<20.4f}{metrics['F1 Score']:<10.4f}{metrics['ROC AUC Score']:<15.4f}{metrics['Sample Size']}")
+    
+    print("\n")
+
+# Prepare the fairness metric results for both gender and ethnicity
+gender_metrics = {
+    "Gender": ["Female", "Male", "Other"],
+    "Demographic Parity": [
+        demographic_parity_gender["female"],
+        demographic_parity_gender["male"],
+        demographic_parity_gender["other"],
+    ],
+    "Equal Opportunity": [
+        equal_opportunity_gender["female"],
+        equal_opportunity_gender["male"],
+        equal_opportunity_gender["other"],
+    ],
+    "Disparate Impact Ratio": [
+        disparate_impact_gender["female"],
+        disparate_impact_gender["male"],
+        disparate_impact_gender["other"],
+    ],
+}
+
+ethnicity_metrics = {
+    "Ethnicity": [
+        "African American",
+        "Asian",
+        "Caucasian",
+        "Latin American",
+        "Arab",
+        "Unknown/Other",
+    ],
+    "Demographic Parity": [
+        demographic_parity_ethnicity["African American"],
+        demographic_parity_ethnicity["Asian"],
+        demographic_parity_ethnicity["Caucasian"],
+        demographic_parity_ethnicity["Latin American"],
+        demographic_parity_ethnicity["Arab"],
+        demographic_parity_ethnicity["Unknown/Other"],
+    ],
+    "Equal Opportunity": [
+        equal_opportunity_ethnicity["African American"],
+        equal_opportunity_ethnicity["Asian"],
+        equal_opportunity_ethnicity["Caucasian"],
+        equal_opportunity_ethnicity["Latin American"],
+        equal_opportunity_ethnicity["Arab"],
+        equal_opportunity_ethnicity["Unknown/Other"],
+    ],
+    "Disparate Impact Ratio": [
+        disparate_impact_ethnicity["African American"],
+        disparate_impact_ethnicity["Asian"],
+        disparate_impact_ethnicity["Caucasian"],
+        disparate_impact_ethnicity["Latin American"],
+        disparate_impact_ethnicity["Arab"],
+        disparate_impact_ethnicity["Unknown/Other"],
+    ],
+}
+
+# Convert the results to DataFrames for better visualization
+gender_df = pd.DataFrame(gender_metrics)
+ethnicity_df = pd.DataFrame(ethnicity_metrics)
+
+# Print the formatted results
+print("Fairness Metrics by Gender:")
+print(gender_df.to_string(index=False))
+
+print("\nFairness Metrics by Ethnicity:")
+print(ethnicity_df.to_string(index=False))
 
 # Change standard output back to default
 sys.stdout = default_stdout
