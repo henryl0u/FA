@@ -15,6 +15,7 @@ from sklearn.metrics import (
     confusion_matrix,
     ConfusionMatrixDisplay,
 )
+from scipy.integrate import trapezoid as trapz
 
 base_path = "./Fairness/CB/Prediction"
 
@@ -332,9 +333,56 @@ def disparate_impact_ratio(pred_data, group_column, pred_column):
         if rates[base_group] > 0
     }
 
+def abroca_metric(pred_data, group_column, target_column, score_column):
+    """
+    Computes the ABROCA (Area Between ROC Curves) metric for fairness evaluation.
+
+    :param pred_data: DataFrame containing the data.
+    :param group_column: Column indicating the demographic group.
+    :param target_column: True labels.
+    :param score_column: Predicted probability scores.
+    :return: A dictionary with ABROCA values for each group.
+    """
+    groups = pred_data[group_column].unique()
+    fpr_tpr_curves = {}
+
+    # Compute ROC curves for each group
+    for group in groups:
+        group_data = pred_data[pred_data[group_column] == group]
+        if len(np.unique(group_data[target_column])) < 2:
+            continue  # Skip groups with only one class present
+        fpr, tpr, _ = roc_curve(group_data[target_column], group_data[score_column])
+        fpr_tpr_curves[group] = (fpr, tpr)
+
+    if not fpr_tpr_curves:
+        raise ValueError("No valid ROC curves could be computed. Check the data.")
+
+    # Select the base group (highest AUC as baseline)
+    base_group = max(fpr_tpr_curves, key=lambda g: len(pred_data[pred_data[group_column] == g]))
+
+    base_fpr, base_tpr = fpr_tpr_curves[base_group]
+
+    abroca_results = {}
+    for group, (fpr, tpr) in fpr_tpr_curves.items():
+        if group == base_group:
+            abroca_results[group] = 0  # Base group has zero disparity
+        else:
+            # Interpolate to match base FPR values
+            interp_tpr = np.interp(base_fpr, fpr, tpr)
+            abroca = trapz(np.abs(base_tpr - interp_tpr), base_fpr)
+            abroca_results[group] = abroca
+
+    return abroca_results
+
+
 
 def fairness_evaluation(
-    pred_data, pred_name, group_column, target_column, pred_column, base_path=None
+    pred_data,
+    pred_name,
+    group_column,
+    target_column,
+    pred_column,
+    base_path=None,
 ):
     # Ensure the save directory exists
     save_dir = os.path.join(base_path, pred_name)
@@ -379,15 +427,33 @@ def fairness_evaluation(
         plt.savefig(save_path)
         plt.show()
 
+        # Compute ABROCA fairness metric
+        abroca_results = abroca_metric(
+            pred_data, group_column, target_column, pred_column
+        )
+
+        for group in fairness_results:
+            fairness_results[group]["ABROCA"] = abroca_results.get(group, 0.0)
+
     return fairness_results
 
 
 # Example usage:
 fairness_metrics_gender = fairness_evaluation(
-    pred60_data, "60", "gender", "registered", "predicted_enrollment", base_path
+    pred60_data,
+    "60",
+    "gender",
+    "registered",
+    "predicted_enrollment",
+    base_path,
 )
 fairness_metrics_ethnicity = fairness_evaluation(
-    pred60_data, "60", "ethnicity", "registered", "predicted_enrollment", base_path
+    pred60_data,
+    "60",
+    "ethnicity",
+    "registered",
+    "predicted_enrollment",
+    base_path,
 )
 
 demographic_parity_gender = demographic_parity(
@@ -416,14 +482,16 @@ for category, metrics_dict in {
     "Ethnicity": fairness_metrics_ethnicity,
 }.items():
     print(f"Fairness Evaluation by {category}:\n")
-    # Print header
-    print(f"{'Group':<20}{'Accuracy':<10}{'Balanced Accuracy':<20}{'F1 Score':<10}{'ROC AUC Score':<15}{'Sample Size'}")
-    print("-" * 85)
-    
+    print(
+        f"{'Group':<20}{'Accuracy':<10}{'Balanced Accuracy':<20}{'F1 Score':<10}{'ROC AUC Score':<15}{'ABROCA':<10}{'Sample Size'}"
+    )
+    print("-" * 100)
+
     for group, metrics in metrics_dict.items():
-        # Print results in a table format
-        print(f"{group:<20}{metrics['Accuracy']:<10.4f}{metrics['Balanced Accuracy']:<20.4f}{metrics['F1 Score']:<10.4f}{metrics['ROC AUC Score']:<15.4f}{metrics['Sample Size']}")
-    
+        print(
+            f"{group:<20}{metrics['Accuracy']:<10.4f}{metrics['Balanced Accuracy']:<20.4f}{metrics['F1 Score']:<10.4f}{metrics['ROC AUC Score']:<15.4f}{metrics['ABROCA']:<10.4f}{metrics['Sample Size']}"
+        )
+
     print("\n")
 
 # Prepare the fairness metric results for both gender and ethnicity
