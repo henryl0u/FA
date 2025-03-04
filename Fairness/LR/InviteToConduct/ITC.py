@@ -11,7 +11,7 @@ from sklearn.metrics import (
     ConfusionMatrixDisplay,
 )
 import os
-from catboost import CatBoostClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import (
     train_test_split,
     GridSearchCV,
@@ -26,8 +26,15 @@ from sklearn.metrics import (
 )
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.calibration import calibration_curve
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import (
+    StandardScaler,
+    OneHotEncoder,
+)
+from sklearn.impute import SimpleImputer
 
-base_path = "./Fairness/CB/InviteToConduct/"
+base_path = "./Fairness/LR/InviteToConduct/"
 
 # Save the default standard output
 default_stdout = sys.stdout
@@ -64,26 +71,31 @@ def plot_confusion_matrix(y_true, y_pred, clf, save_path=None):
     plt.show()
 
 
-def plot_feature_importance(clf, X_train, save_path=None):
-    # Compute feature importance using CatBoost's method
-    feature_importance = clf.get_feature_importance()
-    feature_importance = pd.Series(
-        feature_importance, index=X_train.columns
-    ).sort_values(ascending=False)
+def plot_feature_importance(model, features, save_path=None):
+    # Get the feature importance from the model's coefficients
+    if hasattr(model, "coef_"):
+        feature_importance = model.coef_[0]  # For Logistic Regression, it's a 1D array
+    else:
+        print("Model does not have coef_ attribute for feature importance.")
+        return
 
-    # Plot feature importance
-    plt.figure(figsize=(10, 6))
-    sns.barplot(x=feature_importance, y=feature_importance.index)
+    # Create a DataFrame for easy plotting
+    importance_df = pd.DataFrame(
+        {"Feature": features, "Importance": feature_importance}
+    )
+
+    # Sort the importance values
+    importance_df = importance_df.sort_values(by="Importance", ascending=False)
+
+    # Plot the feature importance
+    plt.figure(figsize=(12, 8))
+    sns.barplot(x="Importance", y="Feature", data=importance_df, palette="viridis")
     plt.title("Feature Importance")
-    plt.xlabel("Feature Importance Score")
-    plt.ylabel("Features")
-    plt.tight_layout()
+    plt.xlabel("Importance")
+    plt.ylabel("Feature")
 
-    # Determine correct save_path
     if save_path:
-        file_path = f"{save_path}/feature_importance.png"
-        plt.savefig(file_path)
-
+        plt.savefig(f"{save_path}/feature_importance.png")
     plt.show()
 
 
@@ -184,42 +196,6 @@ def plot_likelihood_distribution(y_true, y_probs, save_path=None):
     plt.show()
 
 
-def plot_log_loss_evaluation(model, save_path=None):
-    results = model.get_evals_result()
-
-    # Retrieve the keys dynamically based on provided evaluation set names
-    train_logloss = results["learn"]["Logloss"]
-    val_logloss = results["validation"]["Logloss"]
-
-    # Find the best iteration based on minimum validation log loss
-    best_iteration = np.argmin(val_logloss)
-    best_val_logloss = val_logloss[best_iteration]
-
-    plt.figure(figsize=(10, 7))
-    plt.plot(train_logloss, label="Training loss (Log Loss)", color="blue")
-    plt.plot(val_logloss, label="Validation loss (Log Loss)", color="orange")
-
-    # Add a vertical line for the optimal number of iterations
-    plt.axvline(
-        x=best_iteration,
-        color="red",
-        linestyle="--",
-        label=f"Optimal Iteration: {best_iteration}",
-    )
-
-    plt.scatter(
-        best_iteration, best_val_logloss, color="red"
-    )  # Highlight the optimal point
-
-    plt.xlabel("Number of iterations")
-    plt.ylabel("Log Loss")
-    plt.title("Log Loss Evaluation for Training and Validation")
-    plt.legend()
-
-    if save_path:
-        plt.savefig(f"{save_path}/evals.png")
-    plt.show()
-
 
 def plot_reliability_curve(y_true, y_probs, save_path=None):
     # Calculate the calibration curve
@@ -241,9 +217,7 @@ def plot_reliability_curve(y_true, y_probs, save_path=None):
 
 
 def best_threshold_combined(y_true, y_probs, alpha=0.3, save_path=None):
-    thresholds = np.arange(
-        0, 1.01, 0.05
-    )  # Define thresholds from 0 to 1 with a step of 0.05
+    thresholds = np.arange(0, 1.01, 0.05)  # Define thresholds from 0 to 1 with a step of 0.05
     combined_scores = []
 
     # Calculate combined score for each threshold
@@ -271,35 +245,17 @@ def best_threshold_combined(y_true, y_probs, alpha=0.3, save_path=None):
 
     # Plotting the two metrics
     plt.figure(figsize=(10, 6))
-    plt.plot(thresholds, f1_scores, label="F1 Score", color="blue", marker="o")
-    plt.plot(
-        thresholds,
-        balanced_accuracies,
-        label="Balanced Accuracy",
-        color="orange",
-        marker="o",
-    )
-
+    plt.plot(thresholds, f1_scores, label="F1 Score", color="blue", marker='o')
+    plt.plot(thresholds, balanced_accuracies, label="Balanced Accuracy", color="orange", marker='o')
+    
     # Adding threshold line
     plt.title("F1 Score and Balanced Accuracy by Threshold")
     plt.xlabel("Threshold")
     plt.ylabel("Score")
-    plt.axvline(
-        best_threshold,
-        linestyle="--",
-        color="red",
-        label=f"Best Threshold: {best_threshold:.2f}",
-    )
-
+    plt.axvline(best_threshold, linestyle="--", color="red", label=f"Best Threshold: {best_threshold:.2f}")
+    
     # Annotate the optimal threshold value
-    plt.text(
-        best_threshold,
-        max_combined_score,
-        f"{best_threshold:.2f}",
-        color="red",
-        fontsize=12,
-        verticalalignment="bottom",
-    )
+    plt.text(best_threshold, max_combined_score, f'{best_threshold:.2f}', color='red', fontsize=12, verticalalignment='bottom')
 
     # Set x-ticks for finer resolution
     plt.xticks(np.arange(0, 1.05, 0.05))  # X-axis ticks every 0.05
@@ -319,14 +275,6 @@ def save_model(model, base_path):
 def classification_model(
     data, features, target, param_grid, base_path, calibrate=False
 ):
-    X = data[features]
-    y = data[target]
-
-    # Split data
-    X_train, X_val, y_train, y_val = train_test_split(
-        X, y, test_size=0.2, stratify=y, random_state=42
-    )
-
     categorical_features = [
         "role",
         "most_recent_role",
@@ -344,22 +292,69 @@ def classification_model(
         "years_full_time_experience",
     ]
 
+    numerical_features = ["age", "salary_range", "character_count"]
+
+    # Preprocessing for categorical data
+    categorical_transformer = Pipeline(
+        steps=[
+            (
+                "imputer",
+                SimpleImputer(strategy="constant", fill_value="missing"),
+            ),  # Handle missing values
+            ("onehot", OneHotEncoder(handle_unknown="ignore")),  # One-Hot Encoding
+        ]
+    )
+
+    # Preprocessing for numerical data
+    numerical_transformer = Pipeline(
+        steps=[
+            ("imputer", SimpleImputer(strategy="mean")),  # Handle missing values
+            ("scaler", StandardScaler()),  # Scaling the numerical features
+        ]
+    )
+
+    # Combine both preprocessing steps
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ("num", numerical_transformer, numerical_features),
+            ("cat", categorical_transformer, categorical_features),
+        ]
+    )
+
+    # Create a pipeline that first preprocesses the data and then fits the model
+    clf = Pipeline(
+        steps=[
+            ("preprocessor", preprocessor),
+            (
+                "classifier",
+                LogisticRegression(
+                    random_state=42,
+                    solver="liblinear",
+                    max_iter=1000,
+                    class_weight="balanced",
+                ),
+            ),
+        ]
+    )
+
+    X = data[features]
+    y = data[target]
+
+    # Split data into training and validation sets
+    X_train, X_val, y_train, y_val = train_test_split(
+        X, y, test_size=0.2, stratify=y, random_state=42
+    )
+
+    # Grid Search with Logistic Regression
     grid_search_cv = GridSearchCV(
-        estimator=CatBoostClassifier(
-            random_seed=42,
-            early_stopping_rounds=50,
-            silent=True,
-            allow_writing_files=False,
-            auto_class_weights="Balanced",
-            cat_features=categorical_features,
-        ),
+        estimator=clf,
         param_grid=param_grid,
         cv=RepeatedStratifiedKFold(n_splits=5, n_repeats=5, random_state=42),
         n_jobs=-1,
         scoring="f1",
     )
 
-    grid_search_cv.fit(X_train, y_train, eval_set=(X_val, y_val), verbose=False)
+    grid_search_cv.fit(X_train, y_train)
 
     best_clf = grid_search_cv.best_estimator_
 
@@ -381,7 +376,6 @@ def classification_model(
     print(f"Maximum Combined Score: {max_combined_score:.4f}")
 
     y_val_pred = (y_val_probs >= best_threshold).astype(int)
-    # y_val_pred = calibrated_clf.predict(X_val)
 
     val_accuracy = accuracy_score(y_val, y_val_pred)
     val_balanced_accuracy = balanced_accuracy_score(y_val, y_val_pred)
@@ -399,36 +393,27 @@ def classification_model(
     print(classification_report(y_val, y_val_pred))
 
     plot_confusion_matrix(y_val, y_val_pred, calibrated_clf, save_path=save_dir)
-    plot_feature_importance(best_clf, X_train, save_path=save_dir)
-    plot_log_loss_evaluation(best_clf, save_path=save_dir)
+    plot_feature_importance(calibrated_clf, features, save_path=save_dir)
     plot_roc_curve(y_val, y_val_probs, save_path=save_dir)
     plot_reliability_curve(y_val, y_val_probs, save_path=save_dir)
 
-    # Define the save directory path based on prediction name
     save_dir = f"{base_path}/prediction/val"
-
-    # Create directory if it doesn't exist
     os.makedirs(save_dir, exist_ok=True)
 
-    # Collect the results in a DataFrame for better visualization
-    likelihood_df = X_val.copy()  # Keep all original features
+    likelihood_df = X_val.copy()
     likelihood_df["interview_likelihood"] = y_val_probs
 
-    # Save the likelihood predictions to an Excel file for later use
     likelihood_df.to_excel(
         f"{save_dir}/interview_likelihood_val.xlsx",
         index=False,
     )
 
-    # Plot the distribution of predicted likelihoods
     plot_likelihood_distribution(y_val, y_val_probs, save_path=save_dir)
 
     return calibrated_clf, best_threshold
 
 
-def likelihood_prediction(
-    calibrated_clf, pred_data, pred_name, features, best_threshold, base_path
-):
+def likelihood_prediction(calibrated_clf, pred_data, pred_name, features, best_threshold, base_path):
     X_pred = pred_data[features]
 
     likelihood_calibrated = calibrated_clf.predict_proba(X_pred)[:, 1]

@@ -1,0 +1,20 @@
+Classification Model:
+Best Threshold: 0.45
+Maximum Combined Score: 0.8321
+Best Parameters:
+
+Validation Set Accuracy: 0.8305
+Validation Set Balanced Accuracy: 0.8326
+Validation Set F1 Score: 0.8309
+Validation Set ROC AUC Score: 0.8941
+
+              precision    recall  f1-score   support
+
+       False       0.88      0.79      0.83       656
+        True       0.79      0.88      0.83       595
+
+    accuracy                           0.83      1251
+   macro avg       0.83      0.83      0.83      1251
+weighted avg       0.83      0.83      0.83      1251
+
+Model does not have coef_ attribute for feature importance.
