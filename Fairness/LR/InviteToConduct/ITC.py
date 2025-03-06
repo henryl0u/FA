@@ -72,22 +72,28 @@ def plot_confusion_matrix(y_true, y_pred, clf, save_path=None):
 
 
 def plot_feature_importance(model, features, save_path=None):
-    # Get the feature importance from the model's coefficients
+    # Extract the logistic regression model from the pipeline
+    if hasattr(model, "named_steps"):  # Check if it's a pipeline
+        model = model.named_steps["classifier"]  # Get the classifier step
+
+    # Get feature importance from model coefficients
     if hasattr(model, "coef_"):
-        feature_importance = model.coef_[0]  # For Logistic Regression, it's a 1D array
+        feature_importance = model.coef_[0]
     else:
         print("Model does not have coef_ attribute for feature importance.")
         return
 
-    # Create a DataFrame for easy plotting
+    # Ensure feature names match transformed data
+    if len(features) != len(feature_importance):
+        print("Feature count mismatch. The model uses transformed features.")
+        return
+
+    # Create DataFrame
     importance_df = pd.DataFrame(
         {"Feature": features, "Importance": feature_importance}
-    )
+    ).sort_values(by="Importance", ascending=False)
 
-    # Sort the importance values
-    importance_df = importance_df.sort_values(by="Importance", ascending=False)
-
-    # Plot the feature importance
+    # Plot
     plt.figure(figsize=(12, 8))
     sns.barplot(x="Importance", y="Feature", data=importance_df, palette="viridis")
     plt.title("Feature Importance")
@@ -97,6 +103,7 @@ def plot_feature_importance(model, features, save_path=None):
     if save_path:
         plt.savefig(f"{save_path}/feature_importance.png")
     plt.show()
+
 
 
 def plot_roc_curve(y_true, y_scores, save_path=None):
@@ -393,7 +400,7 @@ def classification_model(
     print(classification_report(y_val, y_val_pred))
 
     plot_confusion_matrix(y_val, y_val_pred, calibrated_clf, save_path=save_dir)
-    plot_feature_importance(calibrated_clf, features, save_path=save_dir)
+    plot_feature_importance(best_clf, features, save_path=save_dir)
     plot_roc_curve(y_val, y_val_probs, save_path=save_dir)
     plot_reliability_curve(y_val, y_val_probs, save_path=save_dir)
 
