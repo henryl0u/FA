@@ -31,6 +31,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import (
     StandardScaler,
     OneHotEncoder,
+    MinMaxScaler,
 )
 from sklearn.impute import SimpleImputer
 
@@ -338,7 +339,7 @@ def classification_model(
     numerical_transformer = Pipeline(
         steps=[
             ("imputer", SimpleImputer(strategy="mean")),  # Handle missing values
-            ("scaler", StandardScaler()),  # Scaling the numerical features
+            # ("scaler", MinMaxScaler()),  # Scaling the numerical features
         ]
     )
 
@@ -358,8 +359,6 @@ def classification_model(
                 "classifier",
                 RandomForestClassifier(
                     random_state=42,
-                    class_weight="balanced",
-                    n_jobs=-1,
                 ),
             ),
         ]
@@ -382,7 +381,7 @@ def classification_model(
     grid_search_cv = GridSearchCV(
         estimator=clf,
         param_grid=param_grid,
-        cv=RepeatedStratifiedKFold(n_splits=5, n_repeats=5, random_state=42),
+        cv=5,
         n_jobs=-1,
         scoring="f1",
     )
@@ -494,7 +493,14 @@ feature_columns = [
 
 target_column = "did_interview"
 
-param_grid = {}
+param_grid = {
+    'classifier__n_estimators': [100, 200, 500],  # Default: 100
+    'classifier__max_depth': [5, 10, 20],  # Default: None (expand fully unless limited by other params)
+    'classifier__min_samples_split': [2, 5, 10],  # Default: 2
+    'classifier__min_samples_leaf': [1, 2, 5],  # Default: 1
+    'classifier__class_weight': ['balanced', None],  # Default: None
+}
+
 
 # Main code for classification model
 print("Classification Model:")

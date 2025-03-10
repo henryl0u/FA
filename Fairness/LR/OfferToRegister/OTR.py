@@ -31,6 +31,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import (
     StandardScaler,
     OneHotEncoder,
+    MinMaxScaler,
 )
 from sklearn.impute import SimpleImputer
 
@@ -329,7 +330,7 @@ def classification_model(
     numerical_transformer = Pipeline(
         steps=[
             ("imputer", SimpleImputer(strategy="mean")),  # Handle missing values
-            ("scaler", StandardScaler()),  # Scaling the numerical features
+            ("scaler", MinMaxScaler()),  # Scaling the numerical features
         ]
     )
 
@@ -349,9 +350,6 @@ def classification_model(
                 "classifier",
                 LogisticRegression(
                     random_state=42,
-                    solver="liblinear",
-                    max_iter=1000,
-                    class_weight="balanced",
                 ),
             ),
         ]
@@ -374,7 +372,7 @@ def classification_model(
     grid_search_cv = GridSearchCV(
         estimator=clf,
         param_grid=param_grid,
-        cv=RepeatedStratifiedKFold(n_splits=5, n_repeats=5, random_state=42),
+        cv=5,
         n_jobs=-1,
         scoring="f1",
     )
@@ -497,7 +495,11 @@ feature_columns = [
 
 target_column = "registered"
 
-param_grid = {}
+param_grid = {
+    'classifier__C': [0.01, 0.1, 1, 10],  # Inverse of regularization strength (default: 1)
+    'classifier__max_iter': [1000],  # Max number of iterations for convergence (default: 100)
+    'classifier__class_weight': ['balanced', None],  # Class weights for imbalance handling (default: None)
+}
 
 # Main code for classification model
 print("Classification Model:")

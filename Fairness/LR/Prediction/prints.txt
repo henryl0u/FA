@@ -2,51 +2,51 @@ Predictions for 60:
 Classification Report:
               precision    recall  f1-score   support
 
-       False       0.95      0.83      0.89      2519
-        True       0.50      0.79      0.62       548
+       False       0.94      0.83      0.89      2519
+        True       0.50      0.77      0.61       548
 
     accuracy                           0.82      3067
-   macro avg       0.73      0.81      0.75      3067
-weighted avg       0.87      0.82      0.84      3067
+   macro avg       0.72      0.80      0.75      3067
+weighted avg       0.86      0.82      0.84      3067
 
-Accuracy: 0.8232800782523638
-Balanced Accuracy: 0.8117449717910306
-F1 Score: 0.6161473087818697
-ROC AUC Score: 0.886557056878671
+Accuracy: 0.8229540267362243
+Balanced Accuracy: 0.8022655555008216
+F1 Score: 0.608507570295602
+ROC AUC Score: 0.8852733821496772
 
 
 Fairness Evaluation by Gender:
 
 Group               Accuracy  Balanced Accuracy   F1 Score  ROC AUC Score  ABROCA    Sample Size
 ----------------------------------------------------------------------------------------------------
-female              0.8168    0.8077              0.6134    0.8950         0.0323    1479
-male                0.8288    0.8154              0.6220    0.8797         0.0000    1484
-other               0.8365    0.8151              0.5641    0.8524         0.0034    104
+female              0.8195    0.8022              0.6114    0.8936         0.0155    1479
+male                0.8255    0.8015              0.6082    0.8786         0.0000    1484
+other               0.8365    0.8151              0.5641    0.8524         0.0115    104
 
 
 Fairness Evaluation by Ethnicity:
 
 Group               Accuracy  Balanced Accuracy   F1 Score  ROC AUC Score  ABROCA    Sample Size
 ----------------------------------------------------------------------------------------------------
-African American    0.7970    0.8052              0.5514    0.8833         0.0518    537
-Asian               0.8293    0.8225              0.6748    0.8950         0.0090    627
-Caucasian           0.8197    0.8099              0.6151    0.8908         0.0000    993
-Latin American      0.8500    0.8281              0.6786    0.9034         0.0033    240
-Arab                0.8056    0.7538              0.5205    0.8200         0.0572    180
-Unknown/Other       0.8449    0.8185              0.6000    0.8850         0.0029    490
+African American    0.8007    0.8074              0.5560    0.8824         0.0420    537
+Asian               0.8262    0.8178              0.6687    0.8953         0.0204    627
+Caucasian           0.8197    0.7926              0.6013    0.8883         0.0000    993
+Latin American      0.8417    0.7995              0.6481    0.9059         0.0050    240
+Arab                0.8222    0.7636              0.5429    0.8259         0.0332    180
+Unknown/Other       0.8408    0.8104              0.5895    0.8825         0.0111    490
 
 
 Fairness Metrics by Gender:
 Gender  Demographic Parity  Equal Opportunity  Disparate Impact Ratio
-Female            0.290737           0.793358                1.209466
-  Male            0.275606           0.794677                1.146523
+Female            0.281271           0.774908                1.170088
+  Male            0.268194           0.764259                1.115687
  Other            0.240385           0.785714                1.000000
 
 Fairness Metrics by Ethnicity:
        Ethnicity  Demographic Parity  Equal Opportunity  Disparate Impact Ratio
-African American            0.299814           0.817073                1.255630
-           Asian            0.306220           0.810219                1.282460
-       Caucasian            0.287009           0.794444                1.202004
-  Latin American            0.266667           0.791667                1.116809
-            Arab            0.250000           0.678571                1.047009
-   Unknown/Other            0.238776           0.780822                1.000000
+African American            0.296089           0.817073                1.268955
+           Asian            0.306220           0.802920                1.312372
+       Caucasian            0.270896           0.750000                1.160984
+  Latin American            0.250000           0.729167                1.071429
+            Arab            0.233333           0.678571                1.000000
+   Unknown/Other            0.238776           0.767123                1.023324

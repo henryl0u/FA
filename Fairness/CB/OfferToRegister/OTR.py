@@ -323,7 +323,7 @@ def classification_model(
             cat_features=categorical_features,
         ),
         param_grid=param_grid,
-        cv=RepeatedStratifiedKFold(n_splits=5, n_repeats=5, random_state=42),
+        cv=5,
         n_jobs=-1,
         scoring="f1",
     )
@@ -441,7 +441,11 @@ feature_columns = [
 
 target_column = "registered"
 
-param_grid = {}
+param_grid = {
+    'depth': [4, 6, 8, 10],
+    'learning_rate': [0.01, 0.05, 0.1],
+    'iterations': [1000],
+}
 
 # Main code for classification model
 print("Classification Model:")
