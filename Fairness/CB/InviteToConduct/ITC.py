@@ -322,9 +322,14 @@ def classification_model(
     X = data[features]
     y = data[target]
 
-    # Split data
-    X_train, X_val, y_train, y_val = train_test_split(
+    # Initial Train-Validation Split
+    X_train_full, X_val, y_train_full, y_val = train_test_split(
         X, y, test_size=0.2, stratify=y, random_state=42
+    )
+
+    # Split Training Data Again for Calibration (80% Train, 20% Calibration)
+    X_train, X_calib, y_train, y_calib = train_test_split(
+        X_train_full, y_train_full, test_size=0.2, stratify=y_train_full, random_state=42
     )
 
     categorical_features = [
@@ -365,7 +370,7 @@ def classification_model(
 
     if calibrate:
         calibrated_clf = CalibratedClassifierCV(best_clf, method="sigmoid", cv="prefit")
-        calibrated_clf.fit(X_train, y_train)
+        calibrated_clf.fit(X_calib, y_calib)
     else:
         calibrated_clf = best_clf
 

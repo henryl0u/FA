@@ -246,8 +246,8 @@ def enrollment_prediction(model, pred_data, pred_name, base_path):
 
     # Setting predicted enrollment based on the optimal threshold
     # pred_data["predicted_enrollment"] = (likelihood > optimal_threshold).astype(bool)
-    pred_data["predicted_enrollment"] = (pred_data["enrollment_likelihood"] > 0.55) & (
-        pred_data["interview_likelihood"] > 0.5
+    pred_data["predicted_enrollment"] = (pred_data["enrollment_likelihood"] > 0.4) & (
+        pred_data["interview_likelihood"] > 0.55
     )
     pred_data["predicted_enrollment"] = pred_data["predicted_enrollment"].astype(bool)
 
