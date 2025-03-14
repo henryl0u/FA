@@ -370,13 +370,13 @@ for category, metrics_dict in {
 }.items():
     print(f"Fairness Evaluation by {category}:")
     print(
-        f"{'Group':<20}{'Accuracy':<10}{'Balanced Accuracy':<20}{'F1 Score':<10}{'ROC AUC Score':<15}{'ABROCA Score':<10}{'Sample Size'}"
+        f"{'Group':<20}{'Accuracy':<10}{'Balanced Accuracy':<20}{'F1 Score':<10}{'ROC AUC Score':<15}{'ABROCA Score':<15}{'Sample Size'}"
     )
     print("-" * 100)
 
     for group, metrics in metrics_dict.items():
         print(
-            f"{group:<20}{metrics['Accuracy']:<10.4f}{metrics['Balanced Accuracy']:<20.4f}{metrics['F1 Score']:<10.4f}{metrics['ROC AUC Score']:<15.4f}{metrics['ABROCA Score']:<10.4f}{metrics['Sample Size']}"
+            f"{group:<20}{metrics['Accuracy']:<10.4f}{metrics['Balanced Accuracy']:<20.4f}{metrics['F1 Score']:<10.4f}{metrics['ROC AUC Score']:<15.4f}{metrics['ABROCA Score']:<15.4f}{metrics['Sample Size']}"
         )
 
 # Prepare the fairness metric results for both gender and ethnicity
