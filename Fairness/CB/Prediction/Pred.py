@@ -15,7 +15,7 @@ from sklearn.metrics import (
     confusion_matrix,
     ConfusionMatrixDisplay,
 )
-from scipy.integrate import trapezoid as trapz
+from abroca import *
 
 base_path = "./Fairness/CB/Prediction"
 
@@ -42,46 +42,6 @@ pred60_data["payment_amount"] = pred60_data["payment_amount"].fillna(
 )
 pred60_data.rename(columns={"payment_amount": "payment_amount_actual"}, inplace=True)
 pred60_data["payment_amount"] = pred60_data["predicted_payment"]
-
-
-# model_payment = joblib.load("./Fairness/CB/Payment/model/model.pkl")
-
-# features_payment = [
-#     "age",
-#     "company_caliber",
-#     "years_full_time_experience",
-#     "role",
-#     "most_recent_role",
-#     "industry",
-#     "gender",
-#     "ethnicity",
-#     "country",
-#     "hdyhau",
-#     "salary_range",
-#     "prior_education",
-#     "reason_for_applying",
-#     "character_count",
-#     "management_leadership_experience",
-#     "tuition_benefits",
-#     "english_proficient",
-# ]
-
-# def tuition_prediction(model, pred_data, training_data, features):
-#     X_test = pred_data[features]
-#     predicted_tuition = model.predict(X_test)
-
-#     prediction_df = pred_data.copy()
-#     unique_tuition_values = training_data["payment_amount"].unique()
-
-#     # Ensure we iterate over individual predicted values
-#     prediction_df["payment_amount"] = [
-#         min(unique_tuition_values, key=lambda y: abs(y - pred)) for pred in predicted_tuition
-#     ]
-
-#     return prediction_df
-
-
-# pred60_data = tuition_prediction(model_payment, pred60_data, training_data, features_payment)
 
 # Load your pretrained models and scalers
 model_ITC = joblib.load("./Fairness/CB/InviteToConduct/model/model.pkl")
@@ -209,29 +169,6 @@ def likelihood_prediction(calibrated_clf, pred_data, features):
 
 pred60_data = likelihood_prediction(model_OTR, pred60_data, features_OTR)
 
-
-def optimal_enrollment_threshold(y_true, y_probs, metric="f1"):
-    thresholds = np.arange(0, 1.01, 0.01)
-    best_threshold = 0.5
-    best_score = 0
-    score = 0
-
-    for threshold in thresholds:
-        predictions = (y_probs >= threshold).astype(int)
-
-        if metric == "f1":
-            score = f1_score(y_true, predictions)
-        elif metric == "balanced_accuracy":
-            score = balanced_accuracy_score(y_true, predictions)
-
-        # Check if we found a better score
-        if score > best_score:
-            best_score = score
-            best_threshold = threshold
-
-    return best_threshold, best_score
-
-
 def enrollment_prediction(model, pred_data, pred_name, base_path):
     enrollment_likelihood = pred_data["enrollment_likelihood"]
     interview_likelihood = pred_data["interview_likelihood"]
@@ -239,13 +176,9 @@ def enrollment_prediction(model, pred_data, pred_name, base_path):
     # Calculate combined likelihood
     likelihood = enrollment_likelihood * interview_likelihood
 
-    # Finding the optimal threshold
-    optimal_threshold, _ = optimal_enrollment_threshold(
-        pred_data["registered"], likelihood, metric="f1"
-    )
-
     # Setting predicted enrollment based on the optimal threshold
     # pred_data["predicted_enrollment"] = (likelihood > optimal_threshold).astype(bool)
+    pred_data["register_likelihood"] = likelihood
     pred_data["predicted_enrollment"] = (pred_data["enrollment_likelihood"] > 0.5) & (
         pred_data["interview_likelihood"] > 0.6
     )
@@ -307,79 +240,48 @@ def demographic_parity(pred_data, group_column, pred_column):
     return probabilities
 
 
-def equal_opportunity(pred_data, group_column, target_column, pred_column):
+def equal_opportunity(pred_data, group_column, target_column, pred_column, reference_group=None):
     groups = pred_data[group_column].unique()
+    
     tpr = {
-        group: np.mean(
-            pred_data[
-                (pred_data[group_column] == group) & (pred_data[target_column] == 1)
-            ][pred_column]
-        )
+        group: np.sum((pred_data[group_column] == group) & (pred_data[target_column] == 1) & (pred_data[pred_column] == 1)) / \
+                    np.sum((pred_data[group_column] == group) & (pred_data[target_column] == 1))
         for group in groups
     }
+    
+    if reference_group:
+        if reference_group not in tpr:
+            raise ValueError(f"Reference group '{reference_group}' is not present in the data.")
+        
+        reference_tpr = tpr[reference_group]
+        return {group: tpr[group] / reference_tpr for group in tpr}
+
     return tpr
 
 
-def disparate_impact_ratio(pred_data, group_column, pred_column):
+def disparate_impact_ratio(pred_data, group_column, pred_column, reference_group):
     groups = pred_data[group_column].unique()
     rates = {
         group: np.mean(pred_data[pred_data[group_column] == group][pred_column])
         for group in groups
     }
-    base_group = min(rates, key=rates.get)
+    
+    if reference_group not in rates or rates[reference_group] == 0:
+        raise ValueError(f"Reference group '{reference_group}' has no rate or not present in the data.")
+    
+    base_rate = rates[reference_group]
+    
     return {
-        group: rates[group] / rates[base_group]
+        group: rates[group] / base_rate
         for group in rates
-        if rates[base_group] > 0
     }
-
-def abroca_metric(pred_data, group_column, target_column, score_column):
-    """
-    Computes the ABROCA (Area Between ROC Curves) metric for fairness evaluation.
-
-    :param pred_data: DataFrame containing the data.
-    :param group_column: Column indicating the demographic group.
-    :param target_column: True labels.
-    :param score_column: Predicted probability scores.
-    :return: A dictionary with ABROCA values for each group.
-    """
-    groups = pred_data[group_column].unique()
-    fpr_tpr_curves = {}
-
-    # Compute ROC curves for each group
-    for group in groups:
-        group_data = pred_data[pred_data[group_column] == group]
-        if len(np.unique(group_data[target_column])) < 2:
-            continue  # Skip groups with only one class present
-        fpr, tpr, _ = roc_curve(group_data[target_column], group_data[score_column])
-        fpr_tpr_curves[group] = (fpr, tpr)
-
-    if not fpr_tpr_curves:
-        raise ValueError("No valid ROC curves could be computed. Check the data.")
-
-    # Select the base group (highest AUC as baseline)
-    base_group = max(fpr_tpr_curves, key=lambda g: len(pred_data[pred_data[group_column] == g]))
-
-    base_fpr, base_tpr = fpr_tpr_curves[base_group]
-
-    abroca_results = {}
-    for group, (fpr, tpr) in fpr_tpr_curves.items():
-        if group == base_group:
-            abroca_results[group] = 0  # Base group has zero disparity
-        else:
-            # Interpolate to match base FPR values
-            interp_tpr = np.interp(base_fpr, fpr, tpr)
-            abroca = trapz(np.abs(base_tpr - interp_tpr), base_fpr)
-            abroca_results[group] = abroca
-
-    return abroca_results
-
-
 
 def fairness_evaluation(
     pred_data,
     pred_name,
-    group_column,
+    pred_likelihood,
+    sensitive_column,
+    majority_group,
     target_column,
     pred_column,
     base_path=None,
@@ -388,11 +290,17 @@ def fairness_evaluation(
     save_dir = os.path.join(base_path, pred_name)
     os.makedirs(save_dir, exist_ok=True)
 
-    groups = pred_data[group_column].unique()
+    groups = pred_data[sensitive_column].unique()
     fairness_results = {}
 
+    slice_dir = os.path.join(save_dir, "slices")
+    os.makedirs(slice_dir, exist_ok=True)
+
+    # Compute ABROCA fairness metric for all groups
+    abroca_results = compute_abroca(pred_data, pred_likelihood, target_column, sensitive_column, majority_group, file_path=slice_dir)
+
     for group in groups:
-        group_data = pred_data[pred_data[group_column] == group]
+        group_data = pred_data[pred_data[sensitive_column] == group]
 
         accuracy = accuracy_score(group_data[target_column], group_data[pred_column])
         balanced_acc = balanced_accuracy_score(
@@ -404,13 +312,17 @@ def fairness_evaluation(
             group_data["enrollment_likelihood"] * group_data["interview_likelihood"],
         )
 
-        fairness_results[group] = {
+        # Create a results dictionary for this group
+        group_results = {
             "Accuracy": accuracy,
             "Balanced Accuracy": balanced_acc,
             "F1 Score": f1,
             "ROC AUC Score": roc_auc,
             "Sample Size": len(group_data),
+            "ABROCA Score": abroca_results.get(group)  # Add ABROCA results here
         }
+
+        fairness_results[group] = group_results
 
         # Plot and save confusion matrix
         cm = confusion_matrix(group_data[target_column], group_data[pred_column])
@@ -421,98 +333,53 @@ def fairness_evaluation(
         plt.title(f"Confusion Matrix for {group}")
 
         # Sanitize group name to avoid issues
-        safe_group = str(group).replace("/", "_").replace(" ", "_")
-        save_path = os.path.join(save_dir, f"confusion_matrix_{safe_group}.png")
+        cm_dir = os.path.join(save_dir, "cm")
+        os.makedirs(cm_dir, exist_ok=True)
+        fig_name = str(group).replace("/", "_").replace(" ", "_")
+        save_path = os.path.join(cm_dir, f"confusion_matrix_{fig_name}.png")
 
         plt.savefig(save_path)
         plt.show()
 
-        # Compute ABROCA fairness metric
-        abroca_results = abroca_metric(
-            pred_data, group_column, target_column, pred_column
-        )
-
-        for group in fairness_results:
-            fairness_results[group]["ABROCA"] = abroca_results.get(group, 0.0)
-
     return fairness_results
 
-
-# Example usage:
-fairness_metrics_gender = fairness_evaluation(
-    pred60_data,
-    "60",
-    "gender",
-    "registered",
-    "predicted_enrollment",
-    base_path,
-)
 fairness_metrics_ethnicity = fairness_evaluation(
     pred60_data,
     "60",
+    "register_likelihood",
     "ethnicity",
+    "Caucasian",
     "registered",
     "predicted_enrollment",
     base_path,
-)
-
-demographic_parity_gender = demographic_parity(
-    pred60_data, "gender", "predicted_enrollment"
-)
-equal_opportunity_gender = equal_opportunity(
-    pred60_data, "gender", "registered", "predicted_enrollment"
-)
-disparate_impact_gender = disparate_impact_ratio(
-    pred60_data, "gender", "predicted_enrollment"
 )
 
 demographic_parity_ethnicity = demographic_parity(
     pred60_data, "ethnicity", "predicted_enrollment"
 )
 equal_opportunity_ethnicity = equal_opportunity(
-    pred60_data, "ethnicity", "registered", "predicted_enrollment"
+    pred60_data, "ethnicity", "registered", "predicted_enrollment", "Caucasian"
 )
 disparate_impact_ethnicity = disparate_impact_ratio(
-    pred60_data, "ethnicity", "predicted_enrollment"
+    pred60_data, "ethnicity", "predicted_enrollment", "Caucasian"
 )
 
 # Print results in a formatted manner
 for category, metrics_dict in {
-    "Gender": fairness_metrics_gender,
     "Ethnicity": fairness_metrics_ethnicity,
 }.items():
-    print(f"Fairness Evaluation by {category}:\n")
+    print(f"Fairness Evaluation by {category}:")
     print(
-        f"{'Group':<20}{'Accuracy':<10}{'Balanced Accuracy':<20}{'F1 Score':<10}{'ROC AUC Score':<15}{'ABROCA':<10}{'Sample Size'}"
+        f"{'Group':<20}{'Accuracy':<10}{'Balanced Accuracy':<20}{'F1 Score':<10}{'ROC AUC Score':<15}{'ABROCA Score':<10}{'Sample Size'}"
     )
     print("-" * 100)
 
     for group, metrics in metrics_dict.items():
         print(
-            f"{group:<20}{metrics['Accuracy']:<10.4f}{metrics['Balanced Accuracy']:<20.4f}{metrics['F1 Score']:<10.4f}{metrics['ROC AUC Score']:<15.4f}{metrics['ABROCA']:<10.4f}{metrics['Sample Size']}"
+            f"{group:<20}{metrics['Accuracy']:<10.4f}{metrics['Balanced Accuracy']:<20.4f}{metrics['F1 Score']:<10.4f}{metrics['ROC AUC Score']:<15.4f}{metrics['ABROCA Score']:<10.4f}{metrics['Sample Size']}"
         )
 
-    print("\n")
-
 # Prepare the fairness metric results for both gender and ethnicity
-gender_metrics = {
-    "Gender": ["Female", "Male", "Other"],
-    "Demographic Parity": [
-        demographic_parity_gender["female"],
-        demographic_parity_gender["male"],
-        demographic_parity_gender["other"],
-    ],
-    "Equal Opportunity": [
-        equal_opportunity_gender["female"],
-        equal_opportunity_gender["male"],
-        equal_opportunity_gender["other"],
-    ],
-    "Disparate Impact Ratio": [
-        disparate_impact_gender["female"],
-        disparate_impact_gender["male"],
-        disparate_impact_gender["other"],
-    ],
-}
 
 ethnicity_metrics = {
     "Ethnicity": [
@@ -550,13 +417,9 @@ ethnicity_metrics = {
 }
 
 # Convert the results to DataFrames for better visualization
-gender_df = pd.DataFrame(gender_metrics)
 ethnicity_df = pd.DataFrame(ethnicity_metrics)
 
 # Print the formatted results
-print("Fairness Metrics by Gender:")
-print(gender_df.to_string(index=False))
-
 print("\nFairness Metrics by Ethnicity:")
 print(ethnicity_df.to_string(index=False))
 

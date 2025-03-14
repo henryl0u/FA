@@ -15,38 +15,21 @@ F1 Score: 0.6349442379182156
 ROC AUC Score: 0.8972647296604201
 
 
-Fairness Evaluation by Gender:
-
-Group               Accuracy  Balanced Accuracy   F1 Score  ROC AUC Score  ABROCA    Sample Size
-----------------------------------------------------------------------------------------------------
-female              0.8431    0.8195              0.6463    0.9021         0.0041    1479
-male                0.8376    0.8133              0.6287    0.8925         0.0000    1484
-other               0.8269    0.8095              0.5500    0.9056         0.0365    104
-
-
 Fairness Evaluation by Ethnicity:
-
-Group               Accuracy  Balanced Accuracy   F1 Score  ROC AUC Score  ABROCA    Sample Size
+Group               Accuracy  Balanced Accuracy   F1 Score  ROC AUC Score  ABROCA ScoreSample Size
 ----------------------------------------------------------------------------------------------------
-African American    0.8250    0.7967              0.5688    0.8827         0.0541    537
-Asian               0.8453    0.8327              0.6959    0.9117         0.0082    627
+African American    0.8250    0.7967              0.5688    0.8827         0.0197    537
+Asian               0.8453    0.8327              0.6959    0.9117         0.0175    627
 Caucasian           0.8419    0.8234              0.6456    0.8975         0.0000    993
-Latin American      0.8458    0.8177              0.6667    0.9089         0.0102    240
-Arab                0.7944    0.7035              0.4638    0.8477         0.1408    180
-Unknown/Other       0.8592    0.8325              0.6270    0.8984         0.0022    490
-
-
-Fairness Metrics by Gender:
-Gender  Demographic Parity  Equal Opportunity  Disparate Impact Ratio
-Female            0.260311           0.782288                1.041244
-  Male            0.260108           0.775665                1.040431
- Other            0.250000           0.785714                1.000000
+Latin American      0.8458    0.8177              0.6667    0.9089         0.0177    240
+Arab                0.7944    0.7035              0.4638    0.8477         0.0518    180
+Unknown/Other       0.8592    0.8325              0.6270    0.8984         0.0162    490
 
 Fairness Metrics by Ethnicity:
        Ethnicity  Demographic Parity  Equal Opportunity  Disparate Impact Ratio
-African American            0.253259           0.756098                1.111868
-           Asian            0.290271           0.810219                1.274361
-       Caucasian            0.264854           0.794444                1.162774
-  Latin American            0.262500           0.770833                1.152439
-            Arab            0.227778           0.571429                1.000000
-   Unknown/Other            0.228571           0.794521                1.003484
+African American            0.253259           0.951731                0.956221
+           Asian            0.290271           1.019856                1.095967
+       Caucasian            0.264854           1.000000                1.000000
+  Latin American            0.262500           0.970280                0.991112
+            Arab            0.227778           0.719281                0.860013
+   Unknown/Other            0.228571           1.000096                0.863009
