@@ -25,11 +25,11 @@ Latin American      0.8458    0.8177              0.6667    0.9089         0.017
 Arab                0.7944    0.7035              0.4638    0.8477         0.0518         180
 Unknown/Other       0.8592    0.8325              0.6270    0.8984         0.0162         490
 
-Fairness Metrics by Ethnicity:
-       Ethnicity  Demographic Parity  Equal Opportunity  Disparate Impact Ratio
-African American            0.253259           0.951731                0.956221
-           Asian            0.290271           1.019856                1.095967
-       Caucasian            0.264854           1.000000                1.000000
-  Latin American            0.262500           0.970280                0.991112
-            Arab            0.227778           0.719281                0.860013
-   Unknown/Other            0.228571           1.000096                0.863009
+Fairness Scores and Weights:
+          Ethnicity  Demographic Parity  Equal Opportunity  Predictive Parity  Fairness Score    Weight
+0  African American            0.253259           0.951731           0.455882        0.553624  0.169814
+1             Asian            0.290271           1.019856           0.609890        0.640006  0.146894
+2         Caucasian            0.264854           1.000000           0.543726        0.602860  0.155945
+3    Latin American            0.262500           0.970280           0.587302        0.606694  0.154960
+4              Arab            0.227778           0.719281           0.390244        0.445767  0.210902
+5     Unknown/Other            0.228571           1.000096           0.517857        0.582175  0.161486

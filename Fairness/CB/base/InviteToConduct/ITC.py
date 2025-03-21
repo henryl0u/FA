@@ -27,7 +27,7 @@ from sklearn.metrics import (
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.calibration import calibration_curve
 
-base_path = "./Fairness/CB/InviteToConduct/"
+base_path = "./Fairness/CB/base/InviteToConduct/"
 
 # Save the default standard output
 default_stdout = sys.stdout

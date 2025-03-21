@@ -27,7 +27,7 @@ from sklearn.metrics import (
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.calibration import calibration_curve
 
-base_path = "./Fairness/CB/OfferToRegister/"
+base_path = "./Fairness/CB/base/OfferToRegister/"
 
 # Save the default standard output
 default_stdout = sys.stdout

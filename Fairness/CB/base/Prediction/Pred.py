@@ -17,7 +17,7 @@ from sklearn.metrics import (
 )
 from abroca import *
 
-base_path = "./Fairness/CB/Prediction"
+base_path = "./Fairness/CB/base/Prediction"
 
 # Save the default standard output
 default_stdout = sys.stdout
@@ -44,7 +44,7 @@ pred60_data.rename(columns={"payment_amount": "payment_amount_actual"}, inplace=
 pred60_data["payment_amount"] = pred60_data["predicted_payment"]
 
 # Load your pretrained models and scalers
-model_ITC = joblib.load("./Fairness/CB/InviteToConduct/model/model.pkl")
+model_ITC = joblib.load("./Fairness/CB/base/InviteToConduct/model/model.pkl")
 
 features_ITC = [
     "age",
@@ -132,7 +132,7 @@ def plot_roc_curve(y_true, y_scores, save_path=None):
     return roc_auc
 
 
-model_OTR = joblib.load(f"Fairness/CB/OfferToRegister/model/model.pkl")
+model_OTR = joblib.load(f"Fairness/CB/base/OfferToRegister/model/model.pkl")
 
 features_OTR = [
     "age",
@@ -244,8 +244,11 @@ def equal_opportunity(pred_data, group_column, target_column, pred_column, refer
     groups = pred_data[group_column].unique()
     
     tpr = {
-        group: np.sum((pred_data[group_column] == group) & (pred_data[target_column] == 1) & (pred_data[pred_column] == 1)) / \
-                    np.sum((pred_data[group_column] == group) & (pred_data[target_column] == 1))
+        group: (np.sum((pred_data[group_column] == group) & 
+                       (pred_data[target_column] == 1) & 
+                       (pred_data[pred_column] == 1)) / 
+                np.sum((pred_data[group_column] == group) & (pred_data[target_column] == 1))
+                if np.sum((pred_data[group_column] == group) & (pred_data[target_column] == 1)) > 0 else 0)
         for group in groups
     }
     
@@ -254,27 +257,47 @@ def equal_opportunity(pred_data, group_column, target_column, pred_column, refer
             raise ValueError(f"Reference group '{reference_group}' is not present in the data.")
         
         reference_tpr = tpr[reference_group]
+        if reference_tpr == 0:
+            raise ValueError(f"Reference group '{reference_group}' has a True Positive Rate of zero, causing division by zero.")
+
         return {group: tpr[group] / reference_tpr for group in tpr}
+
 
     return tpr
 
 
-def disparate_impact_ratio(pred_data, group_column, pred_column, reference_group):
+
+# def disparate_impact_ratio(pred_data, group_column, pred_column, reference_group):
+#     groups = pred_data[group_column].unique()
+#     rates = {
+#         group: np.mean(pred_data[pred_data[group_column] == group][pred_column])
+#         for group in groups
+#     }
+    
+#     if reference_group not in rates or rates[reference_group] == 0:
+#         raise ValueError(f"Reference group '{reference_group}' has no rate or not present in the data.")
+    
+#     base_rate = rates[reference_group]
+    
+#     return {
+#         group: rates[group] / base_rate
+#         for group in rates
+#     }
+
+def predictive_parity(pred_data, group_column, pred_column, target_column):
     groups = pred_data[group_column].unique()
-    rates = {
-        group: np.mean(pred_data[pred_data[group_column] == group][pred_column])
+    
+    ppv = {
+        group: (np.sum((pred_data[group_column] == group) & 
+                    (pred_data[pred_column] == 1) & 
+                    (pred_data[target_column] == 1)) / 
+                np.sum((pred_data[group_column] == group) & (pred_data[pred_column] == 1)))
+        if np.sum((pred_data[group_column] == group) & (pred_data[pred_column] == 1)) > 0 else np.nan
         for group in groups
     }
-    
-    if reference_group not in rates or rates[reference_group] == 0:
-        raise ValueError(f"Reference group '{reference_group}' has no rate or not present in the data.")
-    
-    base_rate = rates[reference_group]
-    
-    return {
-        group: rates[group] / base_rate
-        for group in rates
-    }
+
+    return ppv
+
 
 def fairness_evaluation(
     pred_data,
@@ -360,8 +383,11 @@ demographic_parity_ethnicity = demographic_parity(
 equal_opportunity_ethnicity = equal_opportunity(
     pred60_data, "ethnicity", "registered", "predicted_enrollment", "Caucasian"
 )
-disparate_impact_ethnicity = disparate_impact_ratio(
-    pred60_data, "ethnicity", "predicted_enrollment", "Caucasian"
+# disparate_impact_ethnicity = disparate_impact_ratio(
+#     pred60_data, "ethnicity", "predicted_enrollment", "Caucasian"
+# )
+predictive_parity_ethnicity = predictive_parity(
+    pred60_data, "ethnicity", "predicted_enrollment", "registered"
 )
 
 # Print results in a formatted manner
@@ -406,22 +432,48 @@ ethnicity_metrics = {
         equal_opportunity_ethnicity["Arab"],
         equal_opportunity_ethnicity["Unknown/Other"],
     ],
-    "Disparate Impact Ratio": [
-        disparate_impact_ethnicity["African American"],
-        disparate_impact_ethnicity["Asian"],
-        disparate_impact_ethnicity["Caucasian"],
-        disparate_impact_ethnicity["Latin American"],
-        disparate_impact_ethnicity["Arab"],
-        disparate_impact_ethnicity["Unknown/Other"],
+    # "Disparate Impact Ratio": [
+    #     disparate_impact_ethnicity["African American"],
+    #     disparate_impact_ethnicity["Asian"],
+    #     disparate_impact_ethnicity["Caucasian"],
+    #     disparate_impact_ethnicity["Latin American"],
+    #     disparate_impact_ethnicity["Arab"],
+    #     disparate_impact_ethnicity["Unknown/Other"],
+    # ],
+    "Predictive Parity": [
+        predictive_parity_ethnicity["African American"],
+        predictive_parity_ethnicity["Asian"],
+        predictive_parity_ethnicity["Caucasian"],
+        predictive_parity_ethnicity["Latin American"],
+        predictive_parity_ethnicity["Arab"],
+        predictive_parity_ethnicity["Unknown/Other"],
     ],
 }
 
-# Convert the results to DataFrames for better visualization
+# Convert dictionary to DataFrame
 ethnicity_df = pd.DataFrame(ethnicity_metrics)
 
-# Print the formatted results
-print("\nFairness Metrics by Ethnicity:")
-print(ethnicity_df.to_string(index=False))
+# Compute Fairness Score (average of fairness metrics)
+ethnicity_df["Fairness Score"] = ethnicity_df[
+    ["Demographic Parity", "Equal Opportunity", "Predictive Parity"]
+].mean(axis=1)
+
+# Compute fairness-based sample weights (inverse of fairness score)
+ethnicity_df["Weight"] = 1 / ethnicity_df["Fairness Score"]
+
+# Normalize weights to sum to 1
+ethnicity_df["Weight"] /= ethnicity_df["Weight"].sum()
+
+# Display results
+print("\nFairness Scores and Weights:")
+# Ensure all columns are fully visible when printed
+pd.set_option("display.max_columns", None)  # Show all columns
+pd.set_option("display.expand_frame_repr", False)  # Prevent wrapping
+
+# Print the full DataFrame
+print(ethnicity_df)
+
+
 
 # Change standard output back to default
 sys.stdout = default_stdout
