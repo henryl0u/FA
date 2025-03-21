@@ -1,0 +1,35 @@
+Predictions for 60:
+Classification Report:
+              precision    recall  f1-score   support
+
+       False       0.94      0.86      0.90      2519
+        True       0.54      0.76      0.63       548
+
+    accuracy                           0.84      3067
+   macro avg       0.74      0.81      0.77      3067
+weighted avg       0.87      0.84      0.85      3067
+
+Accuracy: 0.8428431692207369
+Balanced Accuracy: 0.8086621965036526
+F1 Score: 0.6320610687022901
+ROC AUC Score: 0.8996104061685931
+
+
+Fairness Evaluation by Ethnicity:
+Group               Accuracy  Balanced Accuracy   F1 Score  ROC AUC Score  ABROCA Score   Sample Size
+----------------------------------------------------------------------------------------------------
+African American    0.8324    0.7611              0.5455    0.8831         0.0178         537
+Asian               0.8389    0.8181              0.6794    0.9097         0.0167         627
+Caucasian           0.8389    0.8194              0.6396    0.8981         0.0000         993
+Latin American      0.8667    0.8307              0.6981    0.9201         0.0227         240
+Arab                0.8167    0.7312              0.5075    0.8524         0.0471         180
+Unknown/Other       0.8653    0.8305              0.6333    0.9032         0.0167         490
+
+Fairness Scores and Weights:
+          Ethnicity  Demographic Parity  Equal Opportunity  Predictive Parity  Fairness Score    Weight
+0  African American            0.216015           0.834765           0.465517        0.505432  0.185077
+1             Asian            0.283892           0.990028           0.601124        0.625014  0.149667
+2         Caucasian            0.265861           1.000000           0.537879        0.601247  0.155583
+3    Latin American            0.241667           0.977113           0.637931        0.618903  0.151145
+4              Arab            0.216667           0.769618           0.435897        0.474061  0.197325
+5     Unknown/Other            0.218367           0.989774           0.532710        0.580284  0.161204
