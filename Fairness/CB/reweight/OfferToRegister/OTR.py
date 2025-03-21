@@ -46,16 +46,22 @@ pred60_data = pd.read_excel("./Data/FA Test Data 60, Offer To Register.xlsx")
 for df in [training_data, pred60_data]:
     df["country"] = df["country"].fillna("NA")
 
-ethnicity_weights = {
-    "African American": 0.169814,
-    "Asian": 0.146894,
-    "Caucasian": 0.155945,
-    "Latin American": 0.154960,
-    "Arab": 0.210902,
-    "Unknown/Other": 0.161486,
-}
+# Step 1: Compute P(A) (probability of each ethnicity group)
+P_A = training_data["ethnicity"].value_counts(normalize=True)
 
-# Map the weights to the training data based on ethnicity
+# Step 2: Compute P(Y) (probability of a favorable outcome, Y=1)
+P_Y = training_data["registered"].mean()  # P(Y=1)
+
+# Step 3: Compute P(A, Y) (joint probability of ethnicity and favorable outcome)
+P_A_Y = training_data.groupby("ethnicity")["registered"].mean()  # P(Y=1 | A)
+
+# Step 4: Compute reweighting factor w(A, Y) = (P(Y) * P(A)) / P(A, Y)
+ethnicity_weights = (P_Y * P_A) / P_A_Y
+
+# Normalize weights to sum to 1
+ethnicity_weights /= ethnicity_weights.sum()
+
+# Step 5: Assign computed weights to each data point
 training_data["weight"] = training_data["ethnicity"].map(ethnicity_weights)
 
 def plot_confusion_matrix(y_true, y_pred, clf, save_path=None):

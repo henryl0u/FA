@@ -179,7 +179,7 @@ def enrollment_prediction(model, pred_data, pred_name, base_path):
     # Setting predicted enrollment based on the optimal threshold
     # pred_data["predicted_enrollment"] = (likelihood > optimal_threshold).astype(bool)
     pred_data["register_likelihood"] = likelihood
-    pred_data["predicted_enrollment"] = (pred_data["enrollment_likelihood"] > 0.55) & (
+    pred_data["predicted_enrollment"] = (pred_data["enrollment_likelihood"] > 0.4) & (
         pred_data["interview_likelihood"] > 0.55
     )
     pred_data["predicted_enrollment"] = pred_data["predicted_enrollment"].astype(bool)
@@ -452,17 +452,6 @@ ethnicity_metrics = {
 
 # Convert dictionary to DataFrame
 ethnicity_df = pd.DataFrame(ethnicity_metrics)
-
-# Compute Fairness Score (average of fairness metrics)
-ethnicity_df["Fairness Score"] = ethnicity_df[
-    ["Demographic Parity", "Equal Opportunity", "Predictive Parity"]
-].mean(axis=1)
-
-# Compute fairness-based sample weights (inverse of fairness score)
-ethnicity_df["Weight"] = 1 / ethnicity_df["Fairness Score"]
-
-# Normalize weights to sum to 1
-ethnicity_df["Weight"] /= ethnicity_df["Weight"].sum()
 
 # Display results
 print("\nFairness Scores and Weights:")

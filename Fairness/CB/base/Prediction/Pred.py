@@ -453,17 +453,6 @@ ethnicity_metrics = {
 # Convert dictionary to DataFrame
 ethnicity_df = pd.DataFrame(ethnicity_metrics)
 
-# Compute Fairness Score (average of fairness metrics)
-ethnicity_df["Fairness Score"] = ethnicity_df[
-    ["Demographic Parity", "Equal Opportunity", "Predictive Parity"]
-].mean(axis=1)
-
-# Compute fairness-based sample weights (inverse of fairness score)
-ethnicity_df["Weight"] = 1 / ethnicity_df["Fairness Score"]
-
-# Normalize weights to sum to 1
-ethnicity_df["Weight"] /= ethnicity_df["Weight"].sum()
-
 # Display results
 print("\nFairness Scores and Weights:")
 # Ensure all columns are fully visible when printed
