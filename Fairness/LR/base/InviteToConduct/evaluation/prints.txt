@@ -1,0 +1,23 @@
+Classification Model:
+Best Threshold: 0.60
+Maximum Combined Score: 0.6662
+Best Parameters:
+classifier__C: 0.01
+classifier__class_weight: None
+classifier__max_iter: 1000
+
+Validation Set Accuracy: 0.6528
+Validation Set Balanced Accuracy: 0.6493
+Validation Set F1 Score: 0.7056
+Validation Set ROC AUC Score: 0.7054
+
+              precision    recall  f1-score   support
+
+       False       0.53      0.64      0.58      1065
+        True       0.75      0.66      0.71      1795
+
+    accuracy                           0.65      2860
+   macro avg       0.64      0.65      0.64      2860
+weighted avg       0.67      0.65      0.66      2860
+
+Feature count mismatch. The model uses transformed features.
