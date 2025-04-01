@@ -317,19 +317,19 @@ def save_model(model, base_path):
 
 
 def classification_model(
-    data, features, target, param_grid, base_path, calibrate=False
+    data, features, target, param_grid, base_path, seed = 42, calibrate=False
 ):
     X = data[features]
     y = data[target]
 
     # Initial Train-Validation Split
     X_train_full, X_val, y_train_full, y_val = train_test_split(
-        X, y, test_size=0.2, stratify=y, random_state=42
+        X, y, test_size=0.2, stratify=y, random_state=seed
     )
 
     # Split Training Data Again for Calibration (80% Train, 20% Calibration)
     X_train, X_calib, y_train, y_calib = train_test_split(
-        X_train_full, y_train_full, test_size=0.2, stratify=y_train_full, random_state=42
+        X_train_full, y_train_full, test_size=0.2, stratify=y_train_full, random_state=seed
     )
 
     categorical_features = [
@@ -480,10 +480,16 @@ feature_columns = [
 
 target_column = "did_interview"
 
+# param_grid = {
+#     'depth': [4, 6, 8, 10],
+#     'learning_rate': [0.01, 0.05, 0.1],
+#     'iterations': [1000],
+# }
+
 param_grid = {
-    'depth': [4, 6, 8, 10],
-    'learning_rate': [0.01, 0.05, 0.1],
+    'depth': [6],
     'iterations': [1000],
+    'learning_rate': [0.05],
 }
 
 
@@ -496,6 +502,7 @@ calibrated_clf, best_threshold = classification_model(
     target_column,
     param_grid,
     base_path,
+    seed=9,
     calibrate=True,
 )
 
