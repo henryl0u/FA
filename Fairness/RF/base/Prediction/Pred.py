@@ -15,6 +15,7 @@ from sklearn.metrics import (
     confusion_matrix,
     ConfusionMatrixDisplay,
 )
+sys.path.append(os.getcwd())
 from abroca import *
 
 base_path = "./Fairness/RF/base/Prediction"
@@ -179,8 +180,8 @@ def enrollment_prediction(model, pred_data, pred_name, base_path):
 
     # Setting predicted enrollment based on the optimal threshold
     pred_data["register_likelihood"] = likelihood
-    pred_data["predicted_enrollment"] = (pred_data["enrollment_likelihood"] > 0.4) & (
-        pred_data["interview_likelihood"] > 0.55
+    pred_data["predicted_enrollment"] = (pred_data["enrollment_likelihood"] > 0.6) & (
+        pred_data["interview_likelihood"] > 0.6
     )
     pred_data["predicted_enrollment"] = pred_data["predicted_enrollment"].astype(bool)
 
