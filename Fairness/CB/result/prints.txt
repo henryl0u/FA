@@ -1,0 +1,49 @@
+Accuracy - Mean: 0.8339, Std: 0.0096
+Balanced Accuracy - Mean: 0.8110, Std: 0.0037
+F1 Score - Mean: 0.6255, Std: 0.0083
+ROC AUC Score - Mean: 0.8988, Std: 0.0012
+
+=== Demographic Parity ===
+African American: Mean = 0.2622, Std = 0.0208
+Asian: Mean = 0.2919, Std = 0.0139
+Caucasian: Mean = 0.2747, Std = 0.0179
+Latin American: Mean = 0.2492, Std = 0.0182
+Arab: Mean = 0.2250, Std = 0.0242
+Unknown/Other: Mean = 0.2331, Std = 0.0157
+
+--- Difference vs Reference Group: Caucasian ---
+African American - ΔMean: -0.0125, ΔStd: 0.0098, t=-3.826, p=0.0041
+Asian - ΔMean: 0.0171, ΔStd: 0.0084, t=6.120, p=0.0002
+Latin American - ΔMean: -0.0256, ΔStd: 0.0109, t=-7.032, p=0.0001
+Arab - ΔMean: -0.0497, ΔStd: 0.0119, t=-12.558, p=0.0000
+Unknown/Other - ΔMean: -0.0417, ΔStd: 0.0092, t=-13.595, p=0.0000
+
+=== Equal Opportunity ===
+African American: Mean = 0.7598, Std = 0.0256
+Asian: Mean = 0.8058, Std = 0.0150
+Caucasian: Mean = 0.7900, Std = 0.0222
+Latin American: Mean = 0.7708, Std = 0.0502
+Arab: Mean = 0.5964, Std = 0.0660
+Unknown/Other: Mean = 0.7712, Std = 0.0288
+
+--- Difference vs Reference Group: Caucasian ---
+African American - ΔMean: -0.0302, ΔStd: 0.0182, t=-4.994, p=0.0007
+Asian - ΔMean: 0.0158, ΔStd: 0.0196, t=2.424, p=0.0384
+Latin American - ΔMean: -0.0192, ΔStd: 0.0354, t=-1.626, p=0.1384
+Arab - ΔMean: -0.1936, ΔStd: 0.0586, t=-9.916, p=0.0000
+Unknown/Other - ΔMean: -0.0188, ΔStd: 0.0242, t=-2.331, p=0.0447
+
+=== Predictive Parity ===
+African American: Mean = 0.4444, Std = 0.0256
+Asian: Mean = 0.6043, Std = 0.0226
+Caucasian: Mean = 0.5225, Std = 0.0195
+Latin American: Mean = 0.6192, Std = 0.0139
+Arab: Mean = 0.4132, Std = 0.0303
+Unknown/Other: Mean = 0.4942, Std = 0.0212
+
+--- Difference vs Reference Group: Caucasian ---
+African American - ΔMean: -0.0781, ΔStd: 0.0156, t=-15.027, p=0.0000
+Asian - ΔMean: 0.0818, ΔStd: 0.0100, t=24.648, p=0.0000
+Latin American - ΔMean: 0.0967, ΔStd: 0.0175, t=16.557, p=0.0000
+Arab - ΔMean: -0.1093, ΔStd: 0.0293, t=-11.198, p=0.0000
+Unknown/Other - ΔMean: -0.0283, ΔStd: 0.0126, t=-6.719, p=0.0001
