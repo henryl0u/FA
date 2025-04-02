@@ -15,6 +15,7 @@ from sklearn.metrics import (
     confusion_matrix,
     ConfusionMatrixDisplay,
 )
+sys.path.append(os.getcwd())
 from abroca import *
 
 base_path = "./Fairness/LR/base/Prediction"
