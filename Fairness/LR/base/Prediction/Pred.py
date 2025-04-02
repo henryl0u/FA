@@ -240,8 +240,7 @@ def demographic_parity(pred_data, group_column, pred_column):
     }
     return probabilities
 
-
-def equal_opportunity(pred_data, group_column, target_column, pred_column, reference_group=None):
+def equal_opportunity(pred_data, group_column, target_column, pred_column):
     groups = pred_data[group_column].unique()
     
     tpr = {
@@ -253,18 +252,7 @@ def equal_opportunity(pred_data, group_column, target_column, pred_column, refer
         for group in groups
     }
     
-    if reference_group:
-        if reference_group not in tpr:
-            raise ValueError(f"Reference group '{reference_group}' is not present in the data.")
-        
-        reference_tpr = tpr[reference_group]
-        if reference_tpr == 0:
-            raise ValueError(f"Reference group '{reference_group}' has a True Positive Rate of zero, causing division by zero.")
-
-        return {group: tpr[group] / reference_tpr for group in tpr}
-
-
-    return tpr
+    return tpr  # No normalization, just raw TPRs
 
 
 
@@ -382,7 +370,7 @@ demographic_parity_ethnicity = demographic_parity(
     pred60_data, "ethnicity", "predicted_enrollment"
 )
 equal_opportunity_ethnicity = equal_opportunity(
-    pred60_data, "ethnicity", "registered", "predicted_enrollment", "Caucasian"
+    pred60_data, "ethnicity", "registered", "predicted_enrollment"
 )
 # disparate_impact_ethnicity = disparate_impact_ratio(
 #     pred60_data, "ethnicity", "predicted_enrollment", "Caucasian"

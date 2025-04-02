@@ -27,9 +27,9 @@ Unknown/Other       0.8531    0.8120              0.6044    0.8984         0.014
 
 Fairness Scores and Weights:
           Ethnicity  Demographic Parity  Equal Opportunity  Predictive Parity
-0  African American            0.266294           0.923465           0.426573
-1             Asian            0.291866           1.005789           0.606557
-2         Caucasian            0.280967           1.000000           0.519713
-3    Latin American            0.241667           0.956897           0.637931
-4              Arab            0.227778           0.798030           0.439024
-5     Unknown/Other            0.222449           0.935286           0.504587
+0  African American            0.266294           0.743902           0.426573
+1             Asian            0.291866           0.810219           0.606557
+2         Caucasian            0.280967           0.805556           0.519713
+3    Latin American            0.241667           0.770833           0.637931
+4              Arab            0.227778           0.642857           0.439024
+5     Unknown/Other            0.222449           0.753425           0.504587
