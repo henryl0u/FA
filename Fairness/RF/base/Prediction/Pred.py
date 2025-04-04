@@ -355,9 +355,6 @@ demographic_parity_ethnicity = demographic_parity(
 equal_opportunity_ethnicity = equal_opportunity(
     pred60_data, "ethnicity", "registered", "predicted_enrollment",
 )
-# disparate_impact_ethnicity = disparate_impact_ratio(
-#     pred60_data, "ethnicity", "predicted_enrollment", "Caucasian"
-# )
 predictive_parity_ethnicity = predictive_parity(
     pred60_data, "ethnicity", "predicted_enrollment", "registered"
 )
@@ -404,14 +401,6 @@ ethnicity_metrics = {
         equal_opportunity_ethnicity["Arab"],
         equal_opportunity_ethnicity["Unknown/Other"],
     ],
-    # "Disparate Impact Ratio": [
-    #     disparate_impact_ethnicity["African American"],
-    #     disparate_impact_ethnicity["Asian"],
-    #     disparate_impact_ethnicity["Caucasian"],
-    #     disparate_impact_ethnicity["Latin American"],
-    #     disparate_impact_ethnicity["Arab"],
-    #     disparate_impact_ethnicity["Unknown/Other"],
-    # ],
     "Predictive Parity": [
         predictive_parity_ethnicity["African American"],
         predictive_parity_ethnicity["Asian"],

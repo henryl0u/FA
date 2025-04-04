@@ -1,6 +1,6 @@
 Classification Model:
-Best Threshold: 0.45
-Maximum Combined Score: 0.8365
+Best Threshold: 0.35
+Maximum Combined Score: 0.8228
 Best Parameters:
 classifier__class_weight: balanced
 classifier__max_depth: 20
@@ -8,17 +8,17 @@ classifier__min_samples_leaf: 2
 classifier__min_samples_split: 2
 classifier__n_estimators: 200
 
-Validation Set Accuracy: 0.8345
-Validation Set Balanced Accuracy: 0.8368
-Validation Set F1 Score: 0.8356
-Validation Set ROC AUC Score: 0.8978
+Validation Set Accuracy: 0.8177
+Validation Set Balanced Accuracy: 0.8218
+Validation Set F1 Score: 0.8252
+Validation Set ROC AUC Score: 0.8895
 
               precision    recall  f1-score   support
 
-       False       0.88      0.79      0.83       656
-        True       0.79      0.88      0.84       595
+       False       0.89      0.74      0.81       656
+        True       0.76      0.90      0.83       595
 
-    accuracy                           0.83      1251
-   macro avg       0.84      0.84      0.83      1251
-weighted avg       0.84      0.83      0.83      1251
+    accuracy                           0.82      1251
+   macro avg       0.83      0.82      0.82      1251
+weighted avg       0.83      0.82      0.82      1251
 

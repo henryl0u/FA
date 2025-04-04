@@ -312,7 +312,7 @@ def save_model(model, base_path):
 
 
 def classification_model(
-    data, features, target, param_grid, base_path, calibrate=False
+    data, features, target, param_grid, base_path, seed=42, calibrate=False
 ):
     categorical_features = [
         "role",
@@ -379,12 +379,12 @@ def classification_model(
 
     # Initial Train-Validation Split
     X_train_full, X_val, y_train_full, y_val, w_train_full, w_val = train_test_split(
-        X, y, sample_weight, test_size=0.2, stratify=y, random_state=42
+        X, y, sample_weight, test_size=0.2, stratify=y, random_state=seed
     )
 
     # Split Training Data Again for Calibration (80% Train, 20% Calibration)
     X_train, X_calib, y_train, y_calib, w_train, w_calib = train_test_split(
-        X_train_full, y_train_full, w_train_full, test_size=0.2, stratify=y_train_full, random_state=42
+        X_train_full, y_train_full, w_train_full, test_size=0.2, stratify=y_train_full, random_state=seed
     )
 
     # Grid Search with Logistic Regression
@@ -514,10 +514,15 @@ feature_columns = [
 
 target_column = "registered"
 
+# param_grid = {
+#     'classifier__C': [0.01, 0.1, 1, 10],  # Inverse of regularization strength (default: 1)
+#     'classifier__max_iter': [1000],  # Max number of iterations for convergence (default: 100)
+#     'classifier__class_weight': ['balanced', None],  # Class weights for imbalance handling (default: None)
+# }
 param_grid = {
-    'classifier__C': [0.01, 0.1, 1, 10],  # Inverse of regularization strength (default: 1)
+    'classifier__C': [1],  # Inverse of regularization strength (default: 1)
     'classifier__max_iter': [1000],  # Max number of iterations for convergence (default: 100)
-    'classifier__class_weight': ['balanced', None],  # Class weights for imbalance handling (default: None)
+    'classifier__class_weight': ['balanced'],  # Class weights for imbalance handling (default: None)
 }
 
 # Main code for classification model
@@ -528,6 +533,7 @@ calibrated_clf, best_threshold = classification_model(
     target_column,
     param_grid,
     base_path,
+    seed=9,
     calibrate=True,
 )
 
