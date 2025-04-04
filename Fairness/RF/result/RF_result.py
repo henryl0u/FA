@@ -87,15 +87,116 @@ predictive_parity_latin_american = [0.590909, 0.608696, 0.593750, 0.627119, 0.60
 predictive_parity_arab = [0.375000, 0.404255, 0.400000, 0.377778, 0.387755, 0.428571, 0.409091, 0.472222, 0.422222, 0.425000]
 predictive_parity_unknown = [0.471074, 0.504274, 0.466102, 0.491228, 0.491228, 0.491228, 0.479339, 0.504587, 0.482456, 0.531250]
 
+# Reweighted Model Metrics (New)
+
+accuracy_reweighted = [
+    0.8187153570264102,
+    0.8278447994783176,
+    0.8301271600912944,
+    0.8337137267688295,
+    0.817411150961852,
+    0.8343658298011086,
+    0.8447994783175742,
+    0.836974241930225,
+    0.8294750570590154,
+    0.8131724812520378
+]
+
+balanced_accuracy_reweighted = [
+    0.8196748506967486,
+    0.8188073560647111,
+    0.8159132925532377,
+    0.8138131949012324,
+    0.8117417118947097,
+    0.8142101778309665,
+    0.8119948971756259,
+    0.8207955306097021,
+    0.8190858960947891,
+    0.822725751442323
+]
+
+f1_score_reweighted = [
+    0.6181318681318682,
+    0.625531914893617,
+    0.6254493170381021,
+    0.6271929824561403,
+    0.6111111111111112,
+    0.6281112737920937,
+    0.6366412213740458,
+    0.6355685131195336,
+    0.6272273699215966,
+    0.6156941649899397
+]
+
+roc_auc_score_reweighted = [
+    0.8876400668785841,
+    0.8863419037214976,
+    0.8875821131662142,
+    0.887534301353509,
+    0.8865882069990698,
+    0.8872807538618904,
+    0.8883825988183237,
+    0.8904863185773522,
+    0.8869033303100814,
+    0.8905993283164736
+]
+
+# Demographic Parity (Reweighted)
+demographic_parity_african_american_reweighted = [0.318436, 0.294227, 0.277467, 0.279330, 0.294227, 0.266294, 0.245810, 0.268156, 0.288641, 0.327747]
+demographic_parity_asian_reweighted = [0.312600, 0.307815, 0.293461, 0.288676, 0.325359, 0.301435, 0.275917, 0.291866, 0.312600, 0.325359]
+demographic_parity_caucasian_reweighted = [0.298087, 0.284995, 0.287009, 0.272910, 0.301108, 0.266868, 0.256798, 0.278953, 0.275932, 0.321249]
+demographic_parity_latin_american_reweighted = [0.275000, 0.279167, 0.266667, 0.250000, 0.279167, 0.266667, 0.229167, 0.266667, 0.283333, 0.295833]
+demographic_parity_arab_reweighted = [0.283333, 0.255556, 0.266667, 0.261111, 0.283333, 0.250000, 0.233333, 0.238889, 0.261111, 0.266667]
+demographic_parity_unknown_reweighted = [0.261224, 0.234694, 0.230612, 0.226531, 0.230612, 0.228571, 0.214286, 0.230612, 0.234694, 0.255102]
+
+# Equal Opportunity (Reweighted)
+equal_opportunity_african_american_reweighted = [0.853659, 0.817073, 0.780488, 0.780488, 0.792683, 0.768293, 0.731707, 0.780488, 0.817073, 0.865854]
+equal_opportunity_asian_reweighted = [0.832117, 0.832117, 0.817518, 0.802920, 0.817518, 0.810219, 0.795620, 0.810219, 0.824818, 0.846715]
+equal_opportunity_caucasian_reweighted = [0.816667, 0.805556, 0.805556, 0.805556, 0.816667, 0.794444, 0.783333, 0.800000, 0.805556, 0.855556]
+equal_opportunity_latin_american_reweighted = [0.833333, 0.812500, 0.791667, 0.770833, 0.833333, 0.791667, 0.729167, 0.812500, 0.833333, 0.854167]
+equal_opportunity_arab_reweighted = [0.678571, 0.678571, 0.714286, 0.642857, 0.714286, 0.642857, 0.642857, 0.678571, 0.678571, 0.678571]
+equal_opportunity_unknown_reweighted = [0.821918, 0.780822, 0.767123, 0.753425, 0.767123, 0.767123, 0.739726, 0.808219, 0.767123, 0.794521]
+
+# Predictive Parity (Reweighted)
+predictive_parity_african_american_reweighted = [0.409357, 0.424051, 0.429530, 0.426667, 0.411392, 0.440559, 0.454545, 0.444444, 0.432258, 0.403409]
+predictive_parity_asian_reweighted = [0.581633, 0.590674, 0.608696, 0.607735, 0.549020, 0.587302, 0.630058, 0.606557, 0.576531, 0.568627]
+predictive_parity_caucasian_reweighted = [0.496622, 0.512367, 0.508772, 0.535055, 0.491639, 0.539623, 0.552941, 0.519856, 0.529197, 0.482759]
+predictive_parity_latin_american_reweighted = [0.606061, 0.582090, 0.593750, 0.616667, 0.597015, 0.593750, 0.636364, 0.609375, 0.588235, 0.577465]
+predictive_parity_arab_reweighted = [0.372549, 0.413043, 0.416667, 0.382979, 0.392157, 0.400000, 0.428571, 0.441860, 0.404255, 0.395833]
+predictive_parity_unknown_reweighted = [0.468750, 0.495652, 0.495575, 0.495495, 0.495575, 0.500000, 0.514286, 0.522124, 0.486957, 0.464000]
+
 
 
 def print_perf_stats(metric_name, values):
     print(f"{metric_name} - Mean: {np.mean(values):.4f}, Std: {np.std(values):.4f}")
 
+print("\n=== Performance Metrics ===")
 print_perf_stats("Accuracy", accuracy)
 print_perf_stats("Balanced Accuracy", balanced_accuracy)
 print_perf_stats("F1 Score", f1_score)
 print_perf_stats("ROC AUC Score", roc_auc_score)
+
+# Print performance stats for reweighted metrics
+print("\n=== Reweighted Performance Metrics ===")
+print_perf_stats("Accuracy (Reweighted)", accuracy_reweighted)
+print_perf_stats("Balanced Accuracy (Reweighted)", balanced_accuracy_reweighted)
+print_perf_stats("F1 Score (Reweighted)", f1_score_reweighted)
+print_perf_stats("ROC AUC Score (Reweighted)", roc_auc_score_reweighted)
+
+def compare_and_print(metric_name, baseline_values, reweighted_values):
+    baseline_values = np.array(baseline_values)
+    reweighted_values = np.array(reweighted_values)
+    diff = reweighted_values - baseline_values
+    mean_diff = np.mean(diff)
+    std_diff = np.std(diff)
+    t_stat, p_val = ttest_rel(reweighted_values, baseline_values)
+    print(f"{metric_name} - ΔMean: {mean_diff:.4f}, ΔStd: {std_diff:.4f}, t={t_stat:.3f}, p={p_val:.4f}")
+
+print("\n=== Performance Metrics Comparison ===")
+compare_and_print("Accuracy", accuracy, accuracy_reweighted)
+compare_and_print("Balanced Accuracy", balanced_accuracy, balanced_accuracy_reweighted)
+compare_and_print("F1 Score", f1_score, f1_score_reweighted)
+compare_and_print("ROC AUC Score", roc_auc_score, roc_auc_score_reweighted)
 
 
 # === FAIRNESS METRICS ===
@@ -149,6 +250,56 @@ for metric_name, groups in fairness_metrics.items():
         std_diff = np.std(diff)
         t_stat, p_val = ttest_rel(values, ref_values)
         print(f"{group} - ΔMean: {mean_diff:.4f}, ΔStd: {std_diff:.4f}, t={t_stat:.3f}, p={p_val:.4f}")
+
+# Now define reweighted fairness metrics in the same structure
+fairness_metrics_reweighted = {
+    "Demographic Parity": {
+        "African American": demographic_parity_african_american_reweighted,
+        "Asian": demographic_parity_asian_reweighted,
+        "Caucasian": demographic_parity_caucasian_reweighted,
+        "Latin American": demographic_parity_latin_american_reweighted,
+        "Arab": demographic_parity_arab_reweighted,
+        "Unknown/Other": demographic_parity_unknown_reweighted
+    },
+    "Equal Opportunity": {
+        "African American": equal_opportunity_african_american_reweighted,
+        "Asian": equal_opportunity_asian_reweighted,
+        "Caucasian": equal_opportunity_caucasian_reweighted,
+        "Latin American": equal_opportunity_latin_american_reweighted,
+        "Arab": equal_opportunity_arab_reweighted,
+        "Unknown/Other": equal_opportunity_unknown_reweighted
+    },
+    "Predictive Parity": {
+        "African American": predictive_parity_african_american_reweighted,
+        "Asian": predictive_parity_asian_reweighted,
+        "Caucasian": predictive_parity_caucasian_reweighted,
+        "Latin American": predictive_parity_latin_american_reweighted,
+        "Arab": predictive_parity_arab_reweighted,
+        "Unknown/Other": predictive_parity_unknown_reweighted
+    }
+}
+
+for metric_name, groups in fairness_metrics_reweighted.items():
+    print(f"\n=== {metric_name} (Reweighted) ===")
+    ref_values = np.array(groups[reference_group])
+
+    for group, values in groups.items():
+        values = np.array(values)
+        mean_val = np.mean(values)
+        std_val = np.std(values)
+        print(f"{group}: Mean = {mean_val:.4f}, Std = {std_val:.4f}")
+
+    print(f"\n--- Difference vs Reference Group: {reference_group} (Reweighted) ---")
+    for group, values in groups.items():
+        if group == reference_group:
+            continue
+        values = np.array(values)
+        diff = values - ref_values
+        mean_diff = np.mean(diff)
+        std_diff = np.std(diff)
+        t_stat, p_val = ttest_rel(values, ref_values)
+        print(f"{group} - ΔMean: {mean_diff:.4f}, ΔStd: {std_diff:.4f}, t={t_stat:.3f}, p={p_val:.4f}")
+
 
 # Change standard output back to default
 sys.stdout = default_stdout
