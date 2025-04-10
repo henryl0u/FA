@@ -70,12 +70,13 @@ Latin American: Mean = 0.2500, Std = 0.0284
 Arab: Mean = 0.2400, Std = 0.0212
 Unknown/Other: Mean = 0.2286, Std = 0.0199
 
---- Difference vs Reference Group: Caucasian (Reweighted) ---
-African American - ΔMean: 0.0348, ΔStd: 0.0133, t=7.868, p=0.0000
-Asian - ΔMean: 0.0583, ΔStd: 0.0142, t=12.352, p=0.0000
-Latin American - ΔMean: 0.0105, ΔStd: 0.0069, t=4.573, p=0.0013
-Arab - ΔMean: 0.0005, ΔStd: 0.0071, t=0.222, p=0.8293
-Unknown/Other - ΔMean: -0.0109, ΔStd: 0.0134, t=-2.450, p=0.0367
+--- Difference vs Baseline Values ---
+African American - ΔMean: -0.0261, ΔStd: 0.0308, t=-2.541, p=0.0317
+Asian - ΔMean: -0.0175, ΔStd: 0.0247, t=-2.135, p=0.0616
+Caucasian - ΔMean: -0.0430, ΔStd: 0.0333, t=-3.869, p=0.0038
+Latin American - ΔMean: -0.0054, ΔStd: 0.0301, t=-0.540, p=0.6025
+Arab - ΔMean: -0.0039, ΔStd: 0.0306, t=-0.381, p=0.7122
+Unknown/Other - ΔMean: -0.0131, ΔStd: 0.0227, t=-1.725, p=0.1186
 
 === Equal Opportunity (Reweighted) ===
 African American: Mean = 0.7646, Std = 0.0299
@@ -85,12 +86,13 @@ Latin American: Mean = 0.7271, Std = 0.0662
 Arab: Mean = 0.5964, Std = 0.0321
 Unknown/Other: Mean = 0.7260, Std = 0.0341
 
---- Difference vs Reference Group: Caucasian (Reweighted) ---
-African American - ΔMean: 0.0746, ΔStd: 0.0388, t=5.771, p=0.0003
-Asian - ΔMean: 0.1217, ΔStd: 0.0457, t=7.995, p=0.0000
-Latin American - ΔMean: 0.0371, ΔStd: 0.0323, t=3.442, p=0.0074
-Arab - ΔMean: -0.0936, ΔStd: 0.0325, t=-8.639, p=0.0000
-Unknown/Other - ΔMean: 0.0360, ΔStd: 0.0313, t=3.448, p=0.0073
+--- Difference vs Baseline Values ---
+African American - ΔMean: -0.0244, ΔStd: 0.0433, t=-1.690, p=0.1252
+Asian - ΔMean: -0.0153, ΔStd: 0.0180, t=-2.553, p=0.0310
+Caucasian - ΔMean: -0.0972, ΔStd: 0.0546, t=-5.346, p=0.0005
+Latin American - ΔMean: -0.0354, ΔStd: 0.0493, t=-2.153, p=0.0597
+Arab - ΔMean: -0.0214, ΔStd: 0.0602, t=-1.068, p=0.3133
+Unknown/Other - ΔMean: -0.0370, ΔStd: 0.0483, t=-2.299, p=0.0471
 
 === Predictive Parity (Reweighted) ===
 African American: Mean = 0.4277, Std = 0.0242
@@ -100,9 +102,10 @@ Latin American: Mean = 0.5835, Std = 0.0232
 Arab: Mean = 0.3880, Std = 0.0191
 Unknown/Other: Mean = 0.4752, Std = 0.0255
 
---- Difference vs Reference Group: Caucasian (Reweighted) ---
-African American - ΔMean: -0.0961, ΔStd: 0.0131, t=-21.958, p=0.0000
-Asian - ΔMean: 0.0740, ΔStd: 0.0194, t=11.450, p=0.0000
-Latin American - ΔMean: 0.0597, ΔStd: 0.0159, t=11.248, p=0.0000
-Arab - ΔMean: -0.1359, ΔStd: 0.0091, t=-44.958, p=0.0000
-Unknown/Other - ΔMean: -0.0487, ΔStd: 0.0144, t=-10.109, p=0.0000
+--- Difference vs Baseline Values ---
+African American - ΔMean: 0.0255, ΔStd: 0.0236, t=3.246, p=0.0101
+Asian - ΔMean: 0.0219, ΔStd: 0.0339, t=1.938, p=0.0846
+Caucasian - ΔMean: 0.0154, ΔStd: 0.0275, t=1.676, p=0.1281
+Latin American - ΔMean: -0.0153, ΔStd: 0.0345, t=-1.334, p=0.2149
+Arab - ΔMean: -0.0074, ΔStd: 0.0229, t=-0.965, p=0.3597
+Unknown/Other - ΔMean: 0.0028, ΔStd: 0.0188, t=0.440, p=0.6702

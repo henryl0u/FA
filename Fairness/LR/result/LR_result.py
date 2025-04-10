@@ -281,7 +281,6 @@ fairness_metrics_reweighted = {
 
 for metric_name, groups in fairness_metrics_reweighted.items():
     print(f"\n=== {metric_name} (Reweighted) ===")
-    ref_values = np.array(groups[reference_group])
 
     for group, values in groups.items():
         values = np.array(values)
@@ -289,16 +288,17 @@ for metric_name, groups in fairness_metrics_reweighted.items():
         std_val = np.std(values)
         print(f"{group}: Mean = {mean_val:.4f}, Std = {std_val:.4f}")
 
-    print(f"\n--- Difference vs Reference Group: {reference_group} (Reweighted) ---")
-    for group, values in groups.items():
-        if group == reference_group:
-            continue
-        values = np.array(values)
-        diff = values - ref_values
+    print(f"\n--- Difference vs Baseline Values ---")
+    baseline_groups = fairness_metrics[metric_name]
+    for group, reweighted_values in groups.items():
+        baseline_values = np.array(baseline_groups[group])
+        reweighted_values = np.array(reweighted_values)
+        diff = reweighted_values - baseline_values
         mean_diff = np.mean(diff)
         std_diff = np.std(diff)
-        t_stat, p_val = ttest_rel(values, ref_values)
+        t_stat, p_val = ttest_rel(reweighted_values, baseline_values)
         print(f"{group} - ΔMean: {mean_diff:.4f}, ΔStd: {std_diff:.4f}, t={t_stat:.3f}, p={p_val:.4f}")
+
 
 
 # Change standard output back to default
