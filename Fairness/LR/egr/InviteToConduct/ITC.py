@@ -456,8 +456,8 @@ calibrated_clf, best_threshold, fitted_preprocessor = classification_model(
     target_column,
     param_grid,
     base_path,
-    seed=0,
-    fairness_metric="equal_opportunity"  # or "demographic_parity"
+    seed=4,
+    fairness_metric="demographic_parity"  # or "demographic_parity"
 )
 
 save_model(calibrated_clf, base_path)
