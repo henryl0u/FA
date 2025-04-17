@@ -2,7 +2,7 @@ import numpy as np
 import sys
 from scipy.stats import ttest_rel
 
-base_path = "./Fairness/LR/result"
+base_path = "./Fairness/LR/reweight/result"
 
 # Save the default standard output
 default_stdout = sys.stdout
@@ -170,12 +170,6 @@ predictive_parity_unknown_reweighted = [0.450000, 0.526316, 0.509804, 0.450820, 
 def print_perf_stats(metric_name, values):
     print(f"{metric_name} - Mean: {np.mean(values):.4f}, Std: {np.std(values):.4f}")
 
-print("\n=== Performance Metrics ===")
-print_perf_stats("Accuracy", accuracy)
-print_perf_stats("Balanced Accuracy", balanced_accuracy)
-print_perf_stats("F1 Score", f1_score)
-print_perf_stats("ROC AUC Score", roc_auc_score)
-
 # Print performance stats for reweighted metrics
 print("\n=== Reweighted Performance Metrics ===")
 print_perf_stats("Accuracy (Reweighted)", accuracy_reweighted)
@@ -229,27 +223,6 @@ fairness_metrics = {
 }
 
 reference_group = "Caucasian"
-
-for metric_name, groups in fairness_metrics.items():
-    print(f"\n=== {metric_name} ===")
-    ref_values = np.array(groups[reference_group])
-    
-    for group, values in groups.items():
-        values = np.array(values)
-        mean_val = np.mean(values)
-        std_val = np.std(values)
-        print(f"{group}: Mean = {mean_val:.4f}, Std = {std_val:.4f}")
-    
-    print(f"\n--- Difference vs Reference Group: {reference_group} ---")
-    for group, values in groups.items():
-        if group == reference_group:
-            continue
-        values = np.array(values)
-        diff = values - ref_values
-        mean_diff = np.mean(diff)
-        std_diff = np.std(diff)
-        t_stat, p_val = ttest_rel(values, ref_values)
-        print(f"{group} - ΔMean: {mean_diff:.4f}, ΔStd: {std_diff:.4f}, t={t_stat:.3f}, p={p_val:.4f}")
 
 # Now define reweighted fairness metrics in the same structure
 fairness_metrics_reweighted = {
