@@ -1,0 +1,32 @@
+Predictions for 60:
+Classification Report:
+              precision    recall  f1-score   support
+
+       False       0.95      0.84      0.89      2519
+        True       0.51      0.78      0.62       548
+
+    accuracy                           0.83      3067
+   macro avg       0.73      0.81      0.75      3067
+weighted avg       0.87      0.83      0.84      3067
+
+Accuracy: 0.8271926964460384
+Balanced Accuracy: 0.8105572828981493
+F1 Score: 0.6187050359712231
+Fairness Evaluation by Ethnicity:
+Group               Accuracy  Balanced Accuracy   F1 Score  Sample Size
+----------------------------------------------------------------------------------------------------
+African American    0.7896    0.7958              0.5388    537
+Asian               0.8533    0.8167              0.6913    627
+Caucasian           0.8338    0.8207              0.6358    993
+Latin American      0.8708    0.8255              0.6990    240
+Arab                0.7889    0.7585              0.5128    180
+Unknown/Other       0.8143    0.8231              0.5728    490
+
+Fairness Scores and Weights:
+          Ethnicity  Demographic Parity  Equal Opportunity  Predictive Parity
+0  African American            0.303538           0.804878           0.404908
+1             Asian            0.256778           0.751825           0.639752
+2         Caucasian            0.274924           0.800000           0.527473
+3    Latin American            0.229167           0.750000           0.654545
+4              Arab            0.277778           0.714286           0.400000
+5     Unknown/Other            0.285714           0.835616           0.435714

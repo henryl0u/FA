@@ -1,0 +1,15 @@
+Classification Model:
+
+--- Fairness-Aware Predictions Evaluation ---
+Accuracy: 0.8433253397282174
+Balanced Accuracy: 0.8445147571223611
+F1 Score: 0.8406504065040651
+              precision    recall  f1-score   support
+
+       False       0.87      0.82      0.85       656
+        True       0.81      0.87      0.84       595
+
+    accuracy                           0.84      1251
+   macro avg       0.84      0.84      0.84      1251
+weighted avg       0.85      0.84      0.84      1251
+
