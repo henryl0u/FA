@@ -1,0 +1,13 @@
+Classification Model:
+Training EGR model using fairness constraint: equal_opportunity and sensitive attribute: ethnicity
+Best Threshold: 0.35
+Maximum Combined Score: 0.8308
+              precision    recall  f1-score   support
+
+       False       0.88      0.79      0.83       656
+        True       0.79      0.88      0.83       595
+
+    accuracy                           0.83      1251
+   macro avg       0.83      0.83      0.83      1251
+weighted avg       0.83      0.83      0.83      1251
+
