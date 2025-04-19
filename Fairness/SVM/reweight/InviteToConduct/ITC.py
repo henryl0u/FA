@@ -507,9 +507,9 @@ target_column = "did_interview"
 # }
 
 param_grid = {
-    'classifier__C': [0.01],             # Regularization (like LR)
-    'classifier__kernel': ['linear'],         # Linear for interpretability, RBF for non-linear
-    'classifier__gamma': ['scale'],          # Kernel coefficient (relevant for RBF)
+    'classifier__C': [10],             # Regularization (like SVM)
+    'classifier__kernel': ['rbf'],         # Linear for interpretability, RBF for non-linear
+    'classifier__gamma': ['auto'],          # Kernel coefficient (relevant for RBF)
     'classifier__class_weight': [None],  # Handle class imbalance
 }
 

@@ -2,34 +2,34 @@ Predictions for 60:
 Classification Report:
               precision    recall  f1-score   support
 
-       False       0.94      0.85      0.90      2519
-        True       0.53      0.77      0.63       548
+       False       0.94      0.85      0.89      2519
+        True       0.51      0.75      0.61       548
 
-    accuracy                           0.84      3067
-   macro avg       0.74      0.81      0.76      3067
-weighted avg       0.87      0.84      0.85      3067
+    accuracy                           0.83      3067
+   macro avg       0.73      0.80      0.75      3067
+weighted avg       0.86      0.83      0.84      3067
 
-Accuracy: 0.8373002934463645
-Balanced Accuracy: 0.81099917995497
-F1 Score: 0.6284437825763217
-ROC AUC Score: 0.892500934503612
+Accuracy: 0.8288229540267362
+Balanced Accuracy: 0.7965574770430857
+F1 Score: 0.609084139985108
+ROC AUC Score: 0.8888078341828383
 
 
 Fairness Evaluation by Ethnicity:
 Group               Accuracy  Balanced Accuracy   F1 Score  ROC AUC Score  ABROCA Score   Sample Size
 ----------------------------------------------------------------------------------------------------
-African American    0.8212    0.7895              0.5596    0.8863         0.0155         537
-Asian               0.8453    0.8432              0.7034    0.9059         0.0221         627
-Caucasian           0.8348    0.8061              0.6256    0.8932         0.0000         993
-Latin American      0.8625    0.8359              0.6972    0.9159         0.0300         240
-Arab                0.8000    0.7068              0.4706    0.8419         0.0515         180
-Unknown/Other       0.8510    0.8108              0.6011    0.8881         0.0141         490
+African American    0.8026    0.7835              0.5391    0.8806         0.0195         537
+Asian               0.8421    0.8280              0.6897    0.9001         0.0158         627
+Caucasian           0.8278    0.7932              0.6087    0.8941         0.0000         993
+Latin American      0.8417    0.7995              0.6481    0.9120         0.0277         240
+Arab                0.8167    0.7021              0.4762    0.8167         0.0778         180
+Unknown/Other       0.8408    0.7991              0.5806    0.8812         0.0187         490
 
 Fairness Scores and Weights:
           Ethnicity  Demographic Parity  Equal Opportunity  Predictive Parity
-0  African American            0.253259           0.743902           0.448529
-1             Asian            0.303030           0.839416           0.605263
-2         Caucasian            0.259819           0.761111           0.531008
-3    Latin American            0.254167           0.791667           0.622951
-4              Arab            0.222222           0.571429           0.400000
-5     Unknown/Other            0.224490           0.753425           0.500000
+0  African American            0.275605           0.756098           0.418919
+1             Asian            0.290271           0.802920           0.604396
+2         Caucasian            0.258812           0.738889           0.517510
+3    Latin American            0.250000           0.729167           0.583333
+4              Arab            0.194444           0.535714           0.428571
+5     Unknown/Other            0.230612           0.739726           0.477876

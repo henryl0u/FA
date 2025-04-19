@@ -513,11 +513,10 @@ target_column = "registered"
 #     'classifier__gamma': ['scale', 'auto'],          # Kernel coefficient (relevant for RBF)
 #     'classifier__class_weight': ['balanced', None],  # Handle class imbalance
 # }
-
 param_grid = {
-    'classifier__C': [10],             # Regularization (like SVM)
-    'classifier__kernel': ['rbf'],         # Linear for interpretability, RBF for non-linear
-    'classifier__gamma': ['auto'],          # Kernel coefficient (relevant for RBF)
+    'classifier__C': [1],             # Regularization (like SVM)
+    'classifier__kernel': ['linear'],         # Linear for interpretability, RBF for non-linear
+    'classifier__gamma': ['scale'],          # Kernel coefficient (relevant for RBF)
     'classifier__class_weight': ['balanced'],  # Handle class imbalance
 }
 
