@@ -11,7 +11,7 @@ from sklearn.metrics import (
     ConfusionMatrixDisplay,
 )
 import os
-from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
 from sklearn.model_selection import (
     train_test_split,
     GridSearchCV,
@@ -35,7 +35,7 @@ from sklearn.preprocessing import (
 )
 from sklearn.impute import SimpleImputer
 
-base_path = "./Fairness/LR/reweight/OfferToRegister/"
+base_path = "./Fairness/SVM/reweight/OfferToRegister/"
 
 # Save the default standard output
 default_stdout = sys.stdout
@@ -312,7 +312,7 @@ def save_model(model, base_path):
 
 
 def classification_model(
-    data, features, target, param_grid, base_path, seed=42, calibrate=False
+    data, features, target, param_grid, base_path, seed=42
 ):
     categorical_features = [
         "role",
@@ -366,7 +366,8 @@ def classification_model(
             ("preprocessor", preprocessor),
             (
                 "classifier",
-                LogisticRegression(
+                SVC(
+                    probability=True,
                     random_state=42,
                 ),
             ),
@@ -378,13 +379,8 @@ def classification_model(
     sample_weight = data["weight"]  # Extract sample weights
 
     # Initial Train-Validation Split
-    X_train_full, X_val, y_train_full, y_val, w_train_full, w_val = train_test_split(
+    X_train, X_val, y_train, y_val, w_train, w_val = train_test_split(
         X, y, sample_weight, test_size=0.2, stratify=y, random_state=seed
-    )
-
-    # Split Training Data Again for Calibration (80% Train, 20% Calibration)
-    X_train, X_calib, y_train, y_calib, w_train, w_calib = train_test_split(
-        X_train_full, y_train_full, w_train_full, test_size=0.2, stratify=y_train_full, random_state=seed
     )
 
     # Grid Search with Logistic Regression
@@ -400,11 +396,8 @@ def classification_model(
 
     best_clf = grid_search_cv.best_estimator_
 
-    if calibrate:
-        calibrated_clf = CalibratedClassifierCV(best_clf, method="sigmoid", cv="prefit")
-        calibrated_clf.fit(X_calib, y_calib, sample_weight=w_calib)
-    else:
-        calibrated_clf = best_clf
+
+    calibrated_clf = best_clf
 
     save_dir = f"{base_path}/evaluation/"
     os.makedirs(save_dir, exist_ok=True)
@@ -435,10 +428,10 @@ def classification_model(
     print(f"Validation Set ROC AUC Score: {val_roc_auc:.4f}\n")
     print(classification_report(y_val, y_val_pred))
 
-    plot_confusion_matrix(y_val, y_val_pred, calibrated_clf, save_path=save_dir)
-    plot_feature_importance(best_clf, X_train, save_path=save_dir)
-    plot_roc_curve(y_val, y_val_probs, save_path=save_dir)
-    plot_reliability_curve(y_val, y_val_probs, save_path=save_dir)
+    # plot_confusion_matrix(y_val, y_val_pred, calibrated_clf, save_path=save_dir)
+    # plot_feature_importance(best_clf, X_train, save_path=save_dir)
+    # plot_roc_curve(y_val, y_val_probs, save_path=save_dir)
+    # plot_reliability_curve(y_val, y_val_probs, save_path=save_dir)
 
     # Define the save directory path based on prediction name
     save_dir = f"{base_path}/prediction/val"
@@ -457,7 +450,7 @@ def classification_model(
     )
 
     # Plot the distribution of predicted likelihoods
-    plot_likelihood_distribution(y_val, y_val_probs, save_path=save_dir)
+    # plot_likelihood_distribution(y_val, y_val_probs, save_path=save_dir)
 
     return calibrated_clf, best_threshold
 
@@ -482,13 +475,13 @@ def likelihood_prediction(
         f"{save_dir}/enrollment_likelihood_{pred_name}.xlsx", index=False
     )
 
-    plot_confusion_matrix(
-        pred_data["registered"], predictions, calibrated_clf, save_path=save_dir
-    )
+    # plot_confusion_matrix(
+    #     pred_data["registered"], predictions, calibrated_clf, save_path=save_dir
+    # )
 
-    plot_likelihood_distribution(
-        pred_data["registered"], likelihood_calibrated, save_path=save_dir
-    )
+    # plot_likelihood_distribution(
+    #     pred_data["registered"], likelihood_calibrated, save_path=save_dir
+    # )
 
 
 feature_columns = [
@@ -515,14 +508,17 @@ feature_columns = [
 target_column = "registered"
 
 # param_grid = {
-#     'classifier__C': [0.01, 0.1, 1, 10],  # Inverse of regularization strength (default: 1)
-#     'classifier__max_iter': [1000],  # Max number of iterations for convergence (default: 100)
-#     'classifier__class_weight': ['balanced', None],  # Class weights for imbalance handling (default: None)
+#     'classifier__C': [0.01, 0.1, 1, 10],             # Regularization (like SVM)
+#     'classifier__kernel': ['linear', 'rbf'],         # Linear for interpretability, RBF for non-linear
+#     'classifier__gamma': ['scale', 'auto'],          # Kernel coefficient (relevant for RBF)
+#     'classifier__class_weight': ['balanced', None],  # Handle class imbalance
 # }
+
 param_grid = {
-    'classifier__C': [1],  # Inverse of regularization strength (default: 1)
-    'classifier__max_iter': [1000],  # Max number of iterations for convergence (default: 100)
-    'classifier__class_weight': ['balanced'],  # Class weights for imbalance handling (default: None)
+    'classifier__C': [10],             # Regularization (like SVM)
+    'classifier__kernel': ['rbf'],         # Linear for interpretability, RBF for non-linear
+    'classifier__gamma': ['auto'],          # Kernel coefficient (relevant for RBF)
+    'classifier__class_weight': ['balanced'],  # Handle class imbalance
 }
 
 # Main code for classification model
@@ -534,7 +530,6 @@ calibrated_clf, best_threshold = classification_model(
     param_grid,
     base_path,
     seed=9,
-    calibrate=True,
 )
 
 save_model(calibrated_clf, base_path)

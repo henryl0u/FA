@@ -11,7 +11,7 @@ from sklearn.metrics import (
     ConfusionMatrixDisplay,
 )
 import os
-from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
 from sklearn.model_selection import (
     train_test_split,
     GridSearchCV,
@@ -35,7 +35,7 @@ from sklearn.preprocessing import (
 )
 from sklearn.impute import SimpleImputer
 
-base_path = "./Fairness/LR/reweight/InviteToConduct/"
+base_path = "./Fairness/SVM/reweight/InviteToConduct/"
 
 # Save the default standard output
 default_stdout = sys.stdout
@@ -71,6 +71,7 @@ ethnicity_weights /= ethnicity_weights.sum()
 
 # Step 5: Assign computed weights to each data point
 training_data["weight"] = training_data["ethnicity"].map(ethnicity_weights)
+
 
 def plot_confusion_matrix(y_true, y_pred, clf, save_path=None):
     cm = confusion_matrix(y_true, y_pred, labels=clf.classes_)
@@ -121,7 +122,6 @@ def plot_feature_importance(model, features, save_path=None):
     if save_path:
         plt.savefig(f"{save_path}/feature_importance.png")
     plt.show()
-
 
 
 def plot_roc_curve(y_true, y_scores, save_path=None):
@@ -221,7 +221,6 @@ def plot_likelihood_distribution(y_true, y_probs, save_path=None):
     plt.show()
 
 
-
 def plot_reliability_curve(y_true, y_probs, save_path=None):
     # Calculate the calibration curve
     prob_true, prob_pred = calibration_curve(y_true, y_probs, n_bins=10)
@@ -242,7 +241,9 @@ def plot_reliability_curve(y_true, y_probs, save_path=None):
 
 
 def best_threshold_combined(y_true, y_probs, alpha=0.3, save_path=None):
-    thresholds = np.arange(0, 1.01, 0.05)  # Define thresholds from 0 to 1 with a step of 0.05
+    thresholds = np.arange(
+        0, 1.01, 0.05
+    )  # Define thresholds from 0 to 1 with a step of 0.05
     combined_scores = []
 
     # Calculate combined score for each threshold
@@ -270,17 +271,35 @@ def best_threshold_combined(y_true, y_probs, alpha=0.3, save_path=None):
 
     # Plotting the two metrics
     plt.figure(figsize=(10, 6))
-    plt.plot(thresholds, f1_scores, label="F1 Score", color="blue", marker='o')
-    plt.plot(thresholds, balanced_accuracies, label="Balanced Accuracy", color="orange", marker='o')
-    
+    plt.plot(thresholds, f1_scores, label="F1 Score", color="blue", marker="o")
+    plt.plot(
+        thresholds,
+        balanced_accuracies,
+        label="Balanced Accuracy",
+        color="orange",
+        marker="o",
+    )
+
     # Adding threshold line
     plt.title("F1 Score and Balanced Accuracy by Threshold")
     plt.xlabel("Threshold")
     plt.ylabel("Score")
-    plt.axvline(best_threshold, linestyle="--", color="red", label=f"Best Threshold: {best_threshold:.2f}")
-    
+    plt.axvline(
+        best_threshold,
+        linestyle="--",
+        color="red",
+        label=f"Best Threshold: {best_threshold:.2f}",
+    )
+
     # Annotate the optimal threshold value
-    plt.text(best_threshold, max_combined_score, f'{best_threshold:.2f}', color='red', fontsize=12, verticalalignment='bottom')
+    plt.text(
+        best_threshold,
+        max_combined_score,
+        f"{best_threshold:.2f}",
+        color="red",
+        fontsize=12,
+        verticalalignment="bottom",
+    )
 
     # Set x-ticks for finer resolution
     plt.xticks(np.arange(0, 1.05, 0.05))  # X-axis ticks every 0.05
@@ -298,7 +317,7 @@ def save_model(model, base_path):
 
 
 def classification_model(
-    data, features, target, param_grid, base_path, seed=42, calibrate=False
+    data, features, target, param_grid, base_path, seed=42
 ):
     categorical_features = [
         "role",
@@ -352,9 +371,7 @@ def classification_model(
             ("preprocessor", preprocessor),
             (
                 "classifier",
-                LogisticRegression(
-                    random_state=42,
-                ),
+                SVC(probability=True, random_state=42),
             ),
         ]
     )
@@ -364,20 +381,15 @@ def classification_model(
     sample_weight = data["weight"]  # Extract sample weights
 
     # Initial Train-Validation Split
-    X_train_full, X_val, y_train_full, y_val, w_train_full, w_val = train_test_split(
+    X_train, X_val, y_train, y_val, w_train, w_val = train_test_split(
         X, y, sample_weight, test_size=0.2, stratify=y, random_state=seed
     )
 
-    # Split Training Data Again for Calibration (80% Train, 20% Calibration)
-    X_train, X_calib, y_train, y_calib, w_train, w_calib = train_test_split(
-        X_train_full, y_train_full, w_train_full, test_size=0.2, stratify=y_train_full, random_state=seed
-    )
 
     # Grid Search with Logistic Regression
     grid_search_cv = GridSearchCV(
         estimator=clf,
         param_grid=param_grid,
-        cv=5,
         n_jobs=-1,
         scoring="f1",
     )
@@ -386,11 +398,8 @@ def classification_model(
 
     best_clf = grid_search_cv.best_estimator_
 
-    if calibrate:
-        calibrated_clf = CalibratedClassifierCV(best_clf, method="sigmoid", cv="prefit")
-        calibrated_clf.fit(X_calib, y_calib, sample_weight=w_calib)
-    else:
-        calibrated_clf = best_clf
+
+    calibrated_clf = best_clf
 
     save_dir = f"{base_path}/evaluation/"
     os.makedirs(save_dir, exist_ok=True)
@@ -420,10 +429,10 @@ def classification_model(
     print(f"Validation Set ROC AUC Score: {val_roc_auc:.4f}\n")
     print(classification_report(y_val, y_val_pred))
 
-    plot_confusion_matrix(y_val, y_val_pred, calibrated_clf, save_path=save_dir)
-    plot_feature_importance(best_clf, features, save_path=save_dir)
-    plot_roc_curve(y_val, y_val_probs, save_path=save_dir)
-    plot_reliability_curve(y_val, y_val_probs, save_path=save_dir)
+    # plot_confusion_matrix(y_val, y_val_pred, calibrated_clf, save_path=save_dir)
+    # # plot_feature_importance(best_clf, features, save_path=save_dir)
+    # plot_roc_curve(y_val, y_val_probs, save_path=save_dir)
+    # plot_reliability_curve(y_val, y_val_probs, save_path=save_dir)
 
     save_dir = f"{base_path}/prediction/val"
     os.makedirs(save_dir, exist_ok=True)
@@ -436,12 +445,14 @@ def classification_model(
         index=False,
     )
 
-    plot_likelihood_distribution(y_val, y_val_probs, save_path=save_dir)
+    # plot_likelihood_distribution(y_val, y_val_probs, save_path=save_dir)
 
     return calibrated_clf, best_threshold
 
 
-def likelihood_prediction(calibrated_clf, pred_data, pred_name, features, best_threshold, base_path):
+def likelihood_prediction(
+    calibrated_clf, pred_data, pred_name, features, best_threshold, base_path
+):
     X_pred = pred_data[features]
 
     likelihood_calibrated = calibrated_clf.predict_proba(X_pred)[:, 1]
@@ -457,13 +468,13 @@ def likelihood_prediction(calibrated_clf, pred_data, pred_name, features, best_t
     likelihood_df.to_excel(
         f"{save_dir}/interview_likelihood_{pred_name}.xlsx", index=False
     )
-    plot_confusion_matrix(
-        pred_data["did_interview"], predictions, calibrated_clf, save_path=save_dir
-    )
+    # plot_confusion_matrix(
+    #     pred_data["did_interview"], predictions, calibrated_clf, save_path=save_dir
+    # )
 
-    plot_likelihood_distribution(
-        pred_data["did_interview"], likelihood_calibrated, save_path=save_dir
-    )
+    # plot_likelihood_distribution(
+    #     pred_data["did_interview"], likelihood_calibrated, save_path=save_dir
+    # )
 
 
 feature_columns = [
@@ -489,14 +500,17 @@ feature_columns = [
 target_column = "did_interview"
 
 # param_grid = {
-#     'classifier__C': [0.01, 0.1, 1, 10],  # Inverse of regularization strength (default: 1)
-#     'classifier__max_iter': [1000],  # Max number of iterations for convergence (default: 100)
-#     'classifier__class_weight': ['balanced', None],  # Class weights for imbalance handling (default: None)
+#     'classifier__C': [0.01, 0.1, 1, 10],             # Regularization (like LR)
+#     'classifier__kernel': ['linear', 'rbf'],         # Linear for interpretability, RBF for non-linear
+#     'classifier__gamma': ['scale', 'auto'],          # Kernel coefficient (relevant for RBF)
+#     'classifier__class_weight': ['balanced', None],  # Handle class imbalance
 # }
+
 param_grid = {
-    'classifier__C': [0.01],  # Inverse of regularization strength (default: 1)
-    'classifier__max_iter': [1000],  # Max number of iterations for convergence (default: 100)
-    'classifier__class_weight': [None],  # Class weights for imbalance handling (default: None)
+    'classifier__C': [0.01],             # Regularization (like LR)
+    'classifier__kernel': ['linear'],         # Linear for interpretability, RBF for non-linear
+    'classifier__gamma': ['scale'],          # Kernel coefficient (relevant for RBF)
+    'classifier__class_weight': [None],  # Handle class imbalance
 }
 
 
@@ -510,7 +524,6 @@ calibrated_clf, best_threshold = classification_model(
     param_grid,
     base_path,
     seed=9,
-    calibrate=True,
 )
 
 save_model(calibrated_clf, base_path)

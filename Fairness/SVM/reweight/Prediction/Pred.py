@@ -18,7 +18,7 @@ from sklearn.metrics import (
 sys.path.append(os.getcwd())
 from abroca import *
 
-base_path = "./Fairness/LR/reweight/Prediction"
+base_path = "./Fairness/SVM/reweight/Prediction"
 
 # Save the default standard output
 default_stdout = sys.stdout
@@ -45,7 +45,7 @@ pred60_data.rename(columns={"payment_amount": "payment_amount_actual"}, inplace=
 pred60_data["payment_amount"] = pred60_data["predicted_payment"]
 
 # Load your pretrained models and scalers
-model_ITC = joblib.load("./Fairness/LR/reweight/InviteToConduct/model/model.pkl")
+model_ITC = joblib.load("./Fairness/SVM/reweight/InviteToConduct/model/model.pkl")
 
 features_ITC = [
     "age",
@@ -133,7 +133,7 @@ def plot_roc_curve(y_true, y_scores, save_path=None):
     return roc_auc
 
 
-model_OTR = joblib.load(f"Fairness/LR/reweight/OfferToRegister/model/model.pkl")
+model_OTR = joblib.load(f"Fairness/SVM/reweight/OfferToRegister/model/model.pkl")
 
 features_OTR = [
     "age",
@@ -181,20 +181,20 @@ def enrollment_prediction(model, pred_data, pred_name, base_path):
     # Setting predicted enrollment based on the optimal threshold
     pred_data["register_likelihood"] = likelihood
     pred_data["predicted_enrollment"] = (pred_data["enrollment_likelihood"] > 0.45) & (
-        pred_data["interview_likelihood"] > 0.6
+        pred_data["interview_likelihood"] > 0.55
     )
     pred_data["predicted_enrollment"] = pred_data["predicted_enrollment"].astype(bool)
 
     save_dir = f"{base_path}/{pred_name}"
     os.makedirs(save_dir, exist_ok=True)
 
-    plot_confusion_matrix(
-        pred_data["registered"],
-        pred_data["predicted_enrollment"],
-        model,
-        save_path=save_dir,
-    )
-    plot_roc_curve(pred_data["registered"], likelihood, save_path=save_dir)
+    # plot_confusion_matrix(
+    #     pred_data["registered"],
+    #     pred_data["predicted_enrollment"],
+    #     model,
+    #     save_path=save_dir,
+    # )
+    # plot_roc_curve(pred_data["registered"], likelihood, save_path=save_dir)
 
     pred_data.to_excel(f"{save_dir}/predictions.xlsx", index=False)
 
@@ -317,22 +317,22 @@ def fairness_evaluation(
 
         fairness_results[group] = group_results
 
-        # Plot and save confusion matrix
-        cm = confusion_matrix(group_data[target_column], group_data[pred_column])
-        disp = ConfusionMatrixDisplay(
-            confusion_matrix=cm, display_labels=["Not Registered", "Registered"]
-        )
-        disp.plot()
-        plt.title(f"Confusion Matrix for {group}")
+        # # Plot and save confusion matrix
+        # cm = confusion_matrix(group_data[target_column], group_data[pred_column])
+        # disp = ConfusionMatrixDisplay(
+        #     confusion_matrix=cm, display_labels=["Not Registered", "Registered"]
+        # )
+        # disp.plot()
+        # plt.title(f"Confusion Matrix for {group}")
 
-        # Sanitize group name to avoid issues
-        cm_dir = os.path.join(save_dir, "cm")
-        os.makedirs(cm_dir, exist_ok=True)
-        fig_name = str(group).replace("/", "_").replace(" ", "_")
-        save_path = os.path.join(cm_dir, f"confusion_matrix_{fig_name}.png")
+        # # Sanitize group name to avoid issues
+        # cm_dir = os.path.join(save_dir, "cm")
+        # os.makedirs(cm_dir, exist_ok=True)
+        # fig_name = str(group).replace("/", "_").replace(" ", "_")
+        # save_path = os.path.join(cm_dir, f"confusion_matrix_{fig_name}.png")
 
-        plt.savefig(save_path)
-        plt.show()
+        # plt.savefig(save_path)
+        # plt.show()
 
     return fairness_results
 
