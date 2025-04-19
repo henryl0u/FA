@@ -1,0 +1,35 @@
+Predictions for 60:
+Classification Report:
+              precision    recall  f1-score   support
+
+       False       0.94      0.86      0.90      2519
+        True       0.53      0.76      0.62       548
+
+    accuracy                           0.84      3067
+   macro avg       0.74      0.81      0.76      3067
+weighted avg       0.87      0.84      0.85      3067
+
+Accuracy: 0.8379523964786436
+Balanced Accuracy: 0.8056848245306474
+F1 Score: 0.6249056603773585
+ROC AUC Score: 0.8908804038214678
+
+
+Fairness Evaluation by Ethnicity:
+Group               Accuracy  Balanced Accuracy   F1 Score  ROC AUC Score  ABROCA Score   Sample Size
+----------------------------------------------------------------------------------------------------
+African American    0.8045    0.7846              0.5415    0.8806         0.0197         537
+Asian               0.8469    0.8363              0.7000    0.9033         0.0142         627
+Caucasian           0.8379    0.8080              0.6299    0.8961         0.0000         993
+Latin American      0.8542    0.7995              0.6602    0.9180         0.0259         240
+Arab                0.8611    0.7284              0.5455    0.8362         0.0621         180
+Unknown/Other       0.8469    0.8027              0.5902    0.8819         0.0172         490
+
+Fairness Scores and Weights:
+          Ethnicity  Demographic Parity  Equal Opportunity  Predictive Parity
+0  African American            0.273743           0.756098           0.421769
+1             Asian            0.291866           0.817518           0.612022
+2         Caucasian            0.256798           0.761111           0.537255
+3    Latin American            0.229167           0.708333           0.618182
+4              Arab            0.150000           0.535714           0.555556
+5     Unknown/Other            0.224490           0.739726           0.490909

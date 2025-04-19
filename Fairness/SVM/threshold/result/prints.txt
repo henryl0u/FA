@@ -1,0 +1,112 @@
+
+=== TO Performance Metrics ===
+Accuracy (EO) - Mean: 0.7891, Std: 0.0268
+Balanced Accuracy (EO) - Mean: 0.7733, Std: 0.0107
+F1 Score (EO) - Mean: 0.5608, Std: 0.0247
+Accuracy (DP) - Mean: 0.8205, Std: 0.0077
+Balanced Accuracy (DP) - Mean: 0.8021, Std: 0.0042
+F1 Score (DP) - Mean: 0.6064, Std: 0.0065
+
+=== Performance Metrics Comparison ===
+Accuracy (EO) - ΔMean: -0.0336, ΔStd: 0.0279, t=-3.607, p=0.0057
+Balanced Accuracy (EO) - ΔMean: -0.0321, ΔStd: 0.0136, t=-7.047, p=0.0001
+F1 Score (EO) - ΔMean: -0.0500, ΔStd: 0.0238, t=-6.306, p=0.0001
+Accuracy (DP) - ΔMean: -0.0021, ΔStd: 0.0130, t=-0.481, p=0.6418
+Balanced Accuracy (DP) - ΔMean: -0.0033, ΔStd: 0.0065, t=-1.513, p=0.1645
+F1 Score (DP) - ΔMean: -0.0044, ΔStd: 0.0100, t=-1.318, p=0.2201
+
+=== Demographic Parity (EO) ===
+African American: Mean = 0.3236, Std = 0.0446
+Asian: Mean = 0.3038, Std = 0.0366
+Caucasian: Mean = 0.2940, Std = 0.0378
+Latin American: Mean = 0.2642, Std = 0.0395
+Arab: Mean = 0.3278, Std = 0.0557
+Unknown/Other: Mean = 0.2876, Std = 0.0364
+
+--- Difference vs Baseline Values ---
+African American - ΔMean: 0.0233, ΔStd: 0.0566, t=1.235, p=0.2483
+Asian - ΔMean: -0.0115, ΔStd: 0.0559, t=-0.616, p=0.5531
+Caucasian - ΔMean: 0.0115, ΔStd: 0.0547, t=0.630, p=0.5446
+Latin American - ΔMean: 0.0088, ΔStd: 0.0490, t=0.535, p=0.6054
+Arab - ΔMean: 0.0839, ΔStd: 0.0675, t=3.728, p=0.0047
+Unknown/Other - ΔMean: 0.0459, ΔStd: 0.0421, t=3.272, p=0.0097
+
+=== Equal Opportunity (EO) ===
+African American: Mean = 0.7720, Std = 0.0494
+Asian: Mean = 0.7642, Std = 0.0118
+Caucasian: Mean = 0.7578, Std = 0.0342
+Latin American: Mean = 0.7000, Std = 0.0904
+Arab: Mean = 0.6679, Std = 0.0620
+Unknown/Other: Mean = 0.7342, Std = 0.0652
+
+--- Difference vs Baseline Values ---
+African American - ΔMean: -0.0171, ΔStd: 0.0813, t=-0.630, p=0.5443
+Asian - ΔMean: -0.0628, ΔStd: 0.0328, t=-5.735, p=0.0003
+Caucasian - ΔMean: -0.0294, ΔStd: 0.0504, t=-1.754, p=0.1134
+Latin American - ΔMean: -0.0625, ΔStd: 0.1193, t=-1.571, p=0.1505
+Arab - ΔMean: 0.0500, ΔStd: 0.0948, t=1.583, p=0.1479
+Unknown/Other - ΔMean: -0.0288, ΔStd: 0.0786, t=-1.099, p=0.3005
+
+=== Predictive Parity (EO) ===
+African American: Mean = 0.3689, Std = 0.0377
+Asian: Mean = 0.5563, Std = 0.0568
+Caucasian: Mean = 0.4728, Std = 0.0446
+Latin American: Mean = 0.5345, Std = 0.0608
+Arab: Mean = 0.3216, Std = 0.0313
+Unknown/Other: Mean = 0.3836, Std = 0.0380
+
+--- Difference vs Baseline Values ---
+African American - ΔMean: -0.0333, ΔStd: 0.0392, t=-2.549, p=0.0312
+Asian - ΔMean: -0.0196, ΔStd: 0.0790, t=-0.746, p=0.4747
+Caucasian - ΔMean: -0.0357, ΔStd: 0.0609, t=-1.761, p=0.1120
+Latin American - ΔMean: -0.0644, ΔStd: 0.0594, t=-3.252, p=0.0100
+Arab - ΔMean: -0.0737, ΔStd: 0.0356, t=-6.210, p=0.0002
+Unknown/Other - ΔMean: -0.0889, ΔStd: 0.0417, t=-6.398, p=0.0001
+
+=== Demographic Parity (DP) ===
+African American: Mean = 0.3149, Std = 0.0254
+Asian: Mean = 0.2713, Std = 0.0152
+Caucasian: Mean = 0.2564, Std = 0.0219
+Latin American: Mean = 0.2475, Std = 0.0339
+Arab: Mean = 0.3228, Std = 0.0580
+Unknown/Other: Mean = 0.2831, Std = 0.0243
+
+--- Difference vs Baseline Values ---
+African American - ΔMean: 0.0145, ΔStd: 0.0296, t=1.474, p=0.1745
+Asian - ΔMean: -0.0440, ΔStd: 0.0272, t=-4.859, p=0.0009
+Caucasian - ΔMean: -0.0261, ΔStd: 0.0418, t=-1.873, p=0.0938
+Latin American - ΔMean: -0.0079, ΔStd: 0.0471, t=-0.504, p=0.6263
+Arab - ΔMean: 0.0789, ΔStd: 0.0709, t=3.339, p=0.0087
+Unknown/Other - ΔMean: 0.0414, ΔStd: 0.0298, t=4.167, p=0.0024
+
+=== Equal Opportunity (DP) ===
+African American: Mean = 0.8049, Std = 0.0366
+Asian: Mean = 0.7781, Std = 0.0202
+Caucasian: Mean = 0.7539, Std = 0.0419
+Latin American: Mean = 0.7437, Std = 0.0728
+Arab: Mean = 0.7179, Std = 0.0790
+Unknown/Other: Mean = 0.8123, Std = 0.0221
+
+--- Difference vs Baseline Values ---
+African American - ΔMean: 0.0159, ΔStd: 0.0450, t=1.057, p=0.3180
+Asian - ΔMean: -0.0489, ΔStd: 0.0244, t=-6.003, p=0.0002
+Caucasian - ΔMean: -0.0333, ΔStd: 0.0600, t=-1.666, p=0.1302
+Latin American - ΔMean: -0.0188, ΔStd: 0.0896, t=-0.628, p=0.5457
+Arab - ΔMean: 0.1000, ΔStd: 0.0982, t=3.055, p=0.0137
+Unknown/Other - ΔMean: 0.0493, ΔStd: 0.0388, t=3.809, p=0.0042
+
+=== Predictive Parity (DP) ===
+African American: Mean = 0.3910, Std = 0.0174
+Asian: Mean = 0.6290, Std = 0.0205
+Caucasian: Mean = 0.5344, Std = 0.0173
+Latin American: Mean = 0.6050, Std = 0.0400
+Arab: Mean = 0.3559, Std = 0.0295
+Unknown/Other: Mean = 0.4299, Std = 0.0280
+
+--- Difference vs Baseline Values ---
+African American - ΔMean: -0.0112, ΔStd: 0.0212, t=-1.589, p=0.1466
+Asian - ΔMean: 0.0530, ΔStd: 0.0330, t=4.823, p=0.0009
+Caucasian - ΔMean: 0.0259, ΔStd: 0.0361, t=2.151, p=0.0600
+Latin American - ΔMean: 0.0062, ΔStd: 0.0508, t=0.365, p=0.7237
+Arab - ΔMean: -0.0395, ΔStd: 0.0400, t=-2.957, p=0.0160
+Unknown/Other - ΔMean: -0.0426, ΔStd: 0.0319, t=-3.998, p=0.0031
