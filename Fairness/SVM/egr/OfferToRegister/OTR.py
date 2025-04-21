@@ -486,17 +486,16 @@ feature_columns = [
 target_column = "registered"
 
 # param_grid = {
-#     'classifier__n_estimators': [100, 200, 500],  # Default: 100
-#     'classifier__max_depth': [5, 10, 20],  # Default: None (expand fully unless limited by other params)
-#     'classifier__min_samples_split': [2, 5, 10],  # Default: 2
-#     'classifier__min_samples_leaf': [1, 2, 5],  # Default: 1
-#     'classifier__class_weight': ['balanced', None],  # Default: None
+#     'classifier__C': [0.01, 0.1, 1, 10],             # Regularization (like SVM)
+#     'classifier__kernel': ['linear', 'rbf'],         # Linear for interpretability, RBF for non-linear
+#     'classifier__gamma': ['scale', 'auto'],          # Kernel coefficient (relevant for RBF)
+#     'classifier__class_weight': ['balanced', None],  # Handle class imbalance
 # }
-
 param_grid = {
-    'classifier__C': [1],  # Inverse of regularization strength (default: 1)
-    'classifier__max_iter': [1000],  # Max number of iterations for convergence (default: 100)
-    'classifier__class_weight': ['balanced'],  # Class weights for imbalance handling (default: None)
+    'classifier__C': [1],             # Regularization (like SVM)
+    'classifier__kernel': ['linear'],         # Linear for interpretability, RBF for non-linear
+    'classifier__gamma': ['scale'],          # Kernel coefficient (relevant for RBF)
+    'classifier__class_weight': ['balanced'],  # Handle class imbalance
 }
 
 # Main code for classification model
@@ -507,7 +506,7 @@ calibrated_clf, best_threshold, fitted_preprocessor = classification_model(
     target_column,
     param_grid,
     base_path,
-    seed=4,
+    seed=0,
     fairness_metric="demographic_parity"  # or "demographic_parity"
 )
 

@@ -11,7 +11,7 @@ from sklearn.metrics import (
     ConfusionMatrixDisplay,
 )
 import os
-from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
 from sklearn.model_selection import (
     train_test_split,
     GridSearchCV,
@@ -37,7 +37,7 @@ from sklearn.impute import SimpleImputer
 from fairlearn.reductions import ExponentiatedGradient, DemographicParity, EqualizedOdds
 
 
-base_path = "./Fairness/LR/egr/InviteToConduct/"
+base_path = "./Fairness/SVM/egr/InviteToConduct/"
 
 # Save the default standard output
 default_stdout = sys.stdout
@@ -338,11 +338,13 @@ def classification_model(
     else:
         raise ValueError("Unsupported fairness metric.")
 
-    base_model = LogisticRegression(
-        C =param_grid['classifier__C'][0],
-        max_iter=param_grid['classifier__max_iter'][0],
+    base_model = SVC(
+        C = param_grid['classifier__C'][0],
+        kernel=param_grid['classifier__kernel'][0],
+        gamma=param_grid['classifier__gamma'][0],
         class_weight=param_grid['classifier__class_weight'][0],
-        random_state=seed
+        probability=True,
+        random_state=seed,
     )
 
     print(f"Training EGR model using fairness constraint: {fairness_metric} and sensitive attribute: ethnicity")
@@ -440,10 +442,18 @@ feature_columns = [
 
 target_column = "did_interview"
 
+# param_grid = {
+#     'classifier__C': [0.01, 0.1, 1, 10],             # Regularization (like LR)
+#     'classifier__kernel': ['linear', 'rbf'],         # Linear for interpretability, RBF for non-linear
+#     'classifier__gamma': ['scale', 'auto'],          # Kernel coefficient (relevant for RBF)
+#     'classifier__class_weight': ['balanced', None],  # Handle class imbalance
+# }
+
 param_grid = {
-    'classifier__C': [0.01],  # Inverse of regularization strength (default: 1)
-    'classifier__max_iter': [1000],  # Max number of iterations for convergence (default: 100)
-    'classifier__class_weight': [None],  # Class weights for imbalance handling (default: None)
+    'classifier__C': [0.01],             # Regularization (like LR)
+    'classifier__kernel': ['linear'],         # Linear for interpretability, RBF for non-linear
+    'classifier__gamma': ['scale'],          # Kernel coefficient (relevant for RBF)
+    'classifier__class_weight': [None],  # Handle class imbalance
 }
 
 
@@ -456,7 +466,7 @@ calibrated_clf, best_threshold, fitted_preprocessor = classification_model(
     target_column,
     param_grid,
     base_path,
-    seed=4,
+    seed=0,
     fairness_metric="demographic_parity"  # or "demographic_parity"
 )
 
