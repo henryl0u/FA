@@ -2,31 +2,31 @@ Predictions for 60:
 Classification Report:
               precision    recall  f1-score   support
 
-       False       0.94      0.78      0.85      2519
-        True       0.43      0.76      0.55       548
+       False       0.94      0.80      0.86      2519
+        True       0.45      0.76      0.57       548
 
-    accuracy                           0.78      3067
-   macro avg       0.69      0.77      0.70      3067
-weighted avg       0.85      0.78      0.80      3067
+    accuracy                           0.79      3067
+   macro avg       0.70      0.78      0.72      3067
+weighted avg       0.85      0.79      0.81      3067
 
-Accuracy: 0.7795891750896642
-Balanced Accuracy: 0.7737244387907378
-F1 Score: 0.5535006605019815
+Accuracy: 0.7936093902836648
+Balanced Accuracy: 0.780117819897248
+F1 Score: 0.5679180887372014
 Fairness Evaluation by Ethnicity:
 Group               Accuracy  Balanced Accuracy   F1 Score  Sample Size
 ----------------------------------------------------------------------------------------------------
-African American    0.7579    0.7672              0.4961    537
-Asian               0.8150    0.7975              0.6442    627
-Caucasian           0.7744    0.7887              0.5659    993
-Latin American      0.8208    0.7630              0.5981    240
-Arab                0.7056    0.7091              0.4301    180
-Unknown/Other       0.7755    0.7494              0.4860    490
+African American    0.7598    0.7733              0.5019    537
+Asian               0.8230    0.7895              0.6431    627
+Caucasian           0.7915    0.7905              0.5784    993
+Latin American      0.8375    0.7656              0.6139    240
+Arab                0.7500    0.7646              0.4944    180
+Unknown/Other       0.7918    0.7816              0.5234    490
 
 Fairness Scores and Weights:
           Ethnicity  Demographic Parity  Equal Opportunity  Predictive Parity
-0  African American            0.327747           0.780488           0.363636
-1             Asian            0.301435           0.766423           0.555556
-2         Caucasian            0.338369           0.811111           0.434524
-3    Latin American            0.245833           0.666667           0.542373
-4              Arab            0.361111           0.714286           0.307692
-5     Unknown/Other            0.287755           0.712329           0.368794
+0  African American            0.329609           0.792683           0.367232
+1             Asian            0.277512           0.729927           0.574713
+2         Caucasian            0.313192           0.788889           0.456592
+3    Latin American            0.220833           0.645833           0.584906
+4              Arab            0.338889           0.785714           0.360656
+5     Unknown/Other            0.287755           0.767123           0.397163

@@ -18,7 +18,7 @@ from sklearn.metrics import (
 sys.path.append(os.getcwd())
 from abroca import *
 
-base_path = "./Fairness/LR/threshold/Prediction"
+base_path = "./Fairness/SVM/threshold/Prediction"
 
 # Save the default standard output
 default_stdout = sys.stdout
@@ -45,7 +45,7 @@ pred60_data.rename(columns={"payment_amount": "payment_amount_actual"}, inplace=
 pred60_data["payment_amount"] = pred60_data["predicted_payment"]
 
 # Load your pretrained models and scalers
-optimizer_ITC = joblib.load("./Fairness/LR/threshold/InviteToConduct/model/optimizer.pkl")
+optimizer_ITC = joblib.load("./Fairness/SVM/threshold/InviteToConduct/model/optimizer.pkl")
 
 features_ITC = [
     "age",
@@ -136,7 +136,7 @@ def plot_roc_curve(y_true, y_scores, save_path=None):
     return roc_auc
 
 
-optimizer_OTR = joblib.load("./Fairness/LR/threshold/OfferToRegister/model/optimizer.pkl")
+optimizer_OTR = joblib.load("./Fairness/SVM/threshold/OfferToRegister/model/optimizer.pkl")
 
 features_OTR = [
     "age",

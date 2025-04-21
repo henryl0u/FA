@@ -11,7 +11,7 @@ from sklearn.metrics import (
     ConfusionMatrixDisplay,
 )
 import os
-from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
 from sklearn.model_selection import (
     train_test_split,
     GridSearchCV,
@@ -36,7 +36,7 @@ from sklearn.preprocessing import (
 from sklearn.impute import SimpleImputer
 from fairlearn.postprocessing import ThresholdOptimizer
 
-base_path = "./Fairness/LR/threshold/InviteToConduct/"
+base_path = "./Fairness/SVM/threshold/InviteToConduct/"
 
 # Save the default standard output
 default_stdout = sys.stdout
@@ -282,7 +282,7 @@ def save_model(model, base_path):
 
 
 def classification_model(
-    data, features, target, param_grid, base_path, seed = 42, calibrate=False, constraint="equalized_odds"
+    data, features, target, param_grid, base_path, seed = 42, constraint="equalized_odds"
 ):
     categorical_features = [
         "role",
@@ -334,12 +334,7 @@ def classification_model(
     clf = Pipeline(
         steps=[
             ("preprocessor", preprocessor),
-            (
-                "classifier",
-                LogisticRegression(
-                    random_state=42,
-                ),
-            ),
+            ("classifier", SVC(probability=True, random_state=42)),
         ]
     )
 
@@ -360,7 +355,6 @@ def classification_model(
     grid_search_cv = GridSearchCV(
         estimator=clf,
         param_grid=param_grid,
-        cv=5,
         n_jobs=-1,
         scoring="f1",
     )
@@ -369,11 +363,9 @@ def classification_model(
 
     best_clf = grid_search_cv.best_estimator_
 
-    if calibrate:
-        calibrated_clf = CalibratedClassifierCV(best_clf, method="sigmoid", cv="prefit")
-        calibrated_clf.fit(X_calib, y_calib)
-    else:
-        calibrated_clf = best_clf
+
+
+    calibrated_clf = best_clf
 
     save_dir = f"{base_path}/evaluation/"
     os.makedirs(save_dir, exist_ok=True)
@@ -470,15 +462,17 @@ feature_columns = [
 target_column = "did_interview"
 
 # param_grid = {
-#     'classifier__C': [0.01, 0.1, 1, 10],  # Inverse of regularization strength (default: 1)
-#     'classifier__max_iter': [1000],  # Max number of iterations for convergence (default: 100)
-#     'classifier__class_weight': ['balanced', None],  # Class weights for imbalance handling (default: None)
+#     'classifier__C': [0.01, 0.1, 1, 10],             # Regularization (like LR)
+#     'classifier__kernel': ['linear', 'rbf'],         # Linear for interpretability, RBF for non-linear
+#     'classifier__gamma': ['scale', 'auto'],          # Kernel coefficient (relevant for RBF)
+#     'classifier__class_weight': ['balanced', None],  # Handle class imbalance
 # }
 
 param_grid = {
-    'classifier__C': [0.01],  # Inverse of regularization strength (default: 1)
-    'classifier__max_iter': [1000],  # Max number of iterations for convergence (default: 100)
-    'classifier__class_weight': [None],  # Class weights for imbalance handling (default: None)
+    'classifier__C': [0.01],             # Regularization (like LR)
+    'classifier__kernel': ['linear'],         # Linear for interpretability, RBF for non-linear
+    'classifier__gamma': ['scale'],          # Kernel coefficient (relevant for RBF)
+    'classifier__class_weight': [None],  # Handle class imbalance
 }
 
 # Main code for classification model
@@ -491,7 +485,6 @@ calibrated_clf, optimizer = classification_model(
     param_grid,
     base_path,
     seed=9,
-    calibrate=True,
     constraint="equalized_odds",
 )
 
