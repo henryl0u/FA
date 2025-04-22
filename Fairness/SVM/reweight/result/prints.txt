@@ -19,7 +19,14 @@ Latin American: Mean = 0.2458, Std = 0.0171
 Arab: Mean = 0.2172, Std = 0.0192
 Unknown/Other: Mean = 0.2198, Std = 0.0175
 
---- Difference vs Baseline Values ---
+--- Difference vs Reference Group: Demographic Parity ---
+African American - ΔMean: 0.0185, ΔStd: 0.0138, t=4.027, p=0.0030
+Asian - ΔMean: 0.0330, ΔStd: 0.0080, t=12.355, p=0.0000
+Latin American - ΔMean: -0.0096, ΔStd: 0.0089, t=-3.207, p=0.0107
+Arab - ΔMean: -0.0382, ΔStd: 0.0126, t=-9.082, p=0.0000
+Unknown/Other - ΔMean: -0.0356, ΔStd: 0.0140, t=-7.605, p=0.0000
+
+--- Difference vs Baseline Values: Demographic Parity ---
 African American - ΔMean: -0.0009, ΔStd: 0.0368, t=-0.076, p=0.9412
 Asian - ΔMean: -0.0029, ΔStd: 0.0233, t=-0.369, p=0.7207
 Caucasian - ΔMean: 0.0016, ΔStd: 0.0238, t=0.203, p=0.8437
@@ -35,7 +42,14 @@ Latin American: Mean = 0.7292, Std = 0.0447
 Arab: Mean = 0.5786, Std = 0.0350
 Unknown/Other: Mean = 0.7205, Std = 0.0421
 
---- Difference vs Baseline Values ---
+--- Difference vs Reference Group: Equal Opportunity ---
+African American - ΔMean: 0.0063, ΔStd: 0.0256, t=0.741, p=0.4775
+Asian - ΔMean: 0.0575, ΔStd: 0.0207, t=8.358, p=0.0000
+Latin American - ΔMean: -0.0169, ΔStd: 0.0277, t=-1.832, p=0.1002
+Arab - ΔMean: -0.1675, ΔStd: 0.0283, t=-17.783, p=0.0000
+Unknown/Other - ΔMean: -0.0256, ΔStd: 0.0346, t=-2.213, p=0.0541
+
+--- Difference vs Baseline Values: Equal Opportunity ---
 African American - ΔMean: -0.0085, ΔStd: 0.0450, t=-0.569, p=0.5831
 Asian - ΔMean: -0.0066, ΔStd: 0.0287, t=-0.686, p=0.5100
 Caucasian - ΔMean: -0.0006, ΔStd: 0.0306, t=-0.055, p=0.9577
@@ -51,7 +65,14 @@ Latin American: Mean = 0.5937, Std = 0.0124
 Arab: Mean = 0.4156, Std = 0.0179
 Unknown/Other: Mean = 0.4894, Std = 0.0167
 
---- Difference vs Baseline Values ---
+--- Difference vs Reference Group: Predictive Parity ---
+African American - ΔMean: -0.1098, ΔStd: 0.0128, t=-25.678, p=0.0000
+Asian - ΔMean: 0.0791, ΔStd: 0.0068, t=34.657, p=0.0000
+Latin American - ΔMean: 0.0634, ΔStd: 0.0152, t=12.518, p=0.0000
+Arab - ΔMean: -0.1147, ΔStd: 0.0158, t=-21.806, p=0.0000
+Unknown/Other - ΔMean: -0.0408, ΔStd: 0.0127, t=-9.611, p=0.0000
+
+--- Difference vs Baseline Values: Predictive Parity ---
 African American - ΔMean: -0.0065, ΔStd: 0.0354, t=-0.553, p=0.5939
 Asian - ΔMean: -0.0012, ΔStd: 0.0284, t=-0.130, p=0.8994
 Caucasian - ΔMean: -0.0059, ΔStd: 0.0299, t=-0.595, p=0.5665
