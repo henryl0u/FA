@@ -1,6 +1,7 @@
 import numpy as np
 import sys
 from scipy.stats import ttest_rel
+import json
 
 base_path = "./Fairness/CB/egr/result"
 
@@ -408,6 +409,110 @@ for metric_name, groups in fairness_metrics_EO.items():
             f"{group} - ΔMean: {mean_diff:.4f}, ΔStd: {std_diff:.4f}, t={t_stat:.3f}, p={p_val:.4f}"
         )
 
+# To store all difference values
+fairness_differences_DP = {}
+
+
+for metric_name, groups in fairness_metrics_DP.items():
+    ref_values = np.array(groups[reference_group])
+    metric_diff = {}
+
+    for group, values in groups.items():
+        if group == reference_group:
+            continue
+        values = np.array(values)
+        diff = (values - ref_values).tolist()
+        metric_diff[group] = diff
+
+    fairness_differences_DP[metric_name] = metric_diff
+
+# Save the difference dictionary to a JSON file
+with open(f"{base_path}/fairness_differences_DP.json", "w") as json_file:
+    json.dump(fairness_differences_DP, json_file, indent=4)
+
+# To store all difference values
+fairness_differences_EO = {}
+
+for metric_name, groups in fairness_metrics_EO.items():
+    ref_values = np.array(groups[reference_group])
+    metric_diff = {}
+
+    for group, values in groups.items():
+        if group == reference_group:
+            continue
+        values = np.array(values)
+        diff = (values - ref_values).tolist()
+        metric_diff[group] = diff
+
+    fairness_differences_EO[metric_name] = metric_diff
+
+# Save the difference dictionary to a JSON file
+with open(f"{base_path}/fairness_differences_EO.json", "w") as json_file:
+    json.dump(fairness_differences_EO, json_file, indent=4)
+
+# Load saved disparity diffs
+with open("./Fairness/CB/base/result/fairness_differences.json") as f:
+    baseline_diffs = json.load(f)
+
+with open("./Fairness/CB/egr/result/fairness_differences_DP.json") as f:
+    mitigated_diffs_DP = json.load(f)
+
+with open("./Fairness/CB/egr/result/fairness_differences_EO.json") as f:
+    mitigated_diffs_EO = json.load(f)
+
+# Helper to interpret fairness movement
+def interpret_disparity_change(base_mean, delta_mean):
+    if base_mean < 0 and delta_mean > 0:
+        return "✅ Improved"
+    elif base_mean > 0 and delta_mean < 0:
+        return "✅ Improved"
+    elif base_mean == 0 and delta_mean != 0:
+        return "⚠️ New Disparity"
+    else:
+        return "❌ Worsened"
+
+print("\n=== Constraint: DP ===")
+# Iterate through all metrics and groups
+for metric_name in baseline_diffs.keys():
+    print(f"\n=== ΔDiff Comparison: {metric_name} ===")
+    
+    for group in baseline_diffs[metric_name]:
+        base_diff = np.array(baseline_diffs[metric_name][group])
+        mitigated_diff = np.array(mitigated_diffs_DP[metric_name][group])
+        mitigated_diff = np.concatenate((mitigated_diff, mitigated_diff))
+        
+        # ΔDisparity = disparity_mitigated − disparity_base
+        delta_diff = mitigated_diff - base_diff
+        
+        mean_base = np.mean(base_diff)
+        mean_delta = np.mean(delta_diff)
+        std_delta = np.std(delta_diff)
+        t_stat, p_val = ttest_rel(mitigated_diff, base_diff)
+        interpretation = interpret_disparity_change(mean_base, mean_delta)
+
+        print(f"{group} - ΔΔMean: {mean_delta:.4f}, ΔΔStd: {std_delta:.4f}, t={t_stat:.3f}, p={p_val:.4f} → {interpretation}")
+
+print("\n=== Constraint: EO ===")
+print("\n=== ΔDiff Comparison: Equal Opportunity ===")
+# Iterate through all metrics and groups
+for metric_name in baseline_diffs.keys():
+    print(f"\n=== ΔDiff Comparison: {metric_name} ===")
+    
+    for group in baseline_diffs[metric_name]:
+        base_diff = np.array(baseline_diffs[metric_name][group])
+        mitigated_diff = np.array(mitigated_diffs_EO[metric_name][group])
+        mitigated_diff = np.concatenate((mitigated_diff, mitigated_diff))
+        
+        # ΔDisparity = disparity_mitigated − disparity_base
+        delta_diff = mitigated_diff - base_diff
+        
+        mean_base = np.mean(base_diff)
+        mean_delta = np.mean(delta_diff)
+        std_delta = np.std(delta_diff)
+        t_stat, p_val = ttest_rel(mitigated_diff, base_diff)
+        interpretation = interpret_disparity_change(mean_base, mean_delta)
+
+        print(f"{group} - ΔΔMean: {mean_delta:.4f}, ΔΔStd: {std_delta:.4f}, t={t_stat:.3f}, p={p_val:.4f} → {interpretation}")
 
 # Change standard output back to default
 sys.stdout = default_stdout

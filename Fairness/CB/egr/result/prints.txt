@@ -156,3 +156,51 @@ Caucasian - ΔMean: -0.0155, ΔStd: 0.0285, t=-1.629, p=0.1378
 Latin American - ΔMean: 0.0279, ΔStd: 0.0181, t=4.627, p=0.0012
 Arab - ΔMean: -0.0022, ΔStd: 0.0377, t=-0.174, p=0.8659
 Unknown/Other - ΔMean: -0.0268, ΔStd: 0.0225, t=-3.568, p=0.0060
+
+=== Constraint: DP ===
+
+=== ΔDiff Comparison: Demographic Parity ===
+African American - ΔΔMean: 0.0235, ΔΔStd: 0.0107, t=6.555, p=0.0001 → ✅ Improved
+Asian - ΔΔMean: -0.0069, ΔΔStd: 0.0098, t=-2.123, p=0.0628 → ✅ Improved
+Latin American - ΔΔMean: 0.0033, ΔΔStd: 0.0107, t=0.924, p=0.3796 → ✅ Improved
+Arab - ΔΔMean: 0.0658, ΔΔStd: 0.0239, t=8.250, p=0.0000 → ✅ Improved
+Unknown/Other - ΔΔMean: 0.0621, ΔΔStd: 0.0239, t=7.785, p=0.0000 → ✅ Improved
+
+=== ΔDiff Comparison: Equal Opportunity ===
+African American - ΔΔMean: 0.0294, ΔΔStd: 0.0250, t=3.533, p=0.0064 → ✅ Improved
+Asian - ΔΔMean: -0.0064, ΔΔStd: 0.0194, t=-0.988, p=0.3488 → ✅ Improved
+Latin American - ΔΔMean: 0.0153, ΔΔStd: 0.0578, t=0.793, p=0.4482 → ✅ Improved
+Arab - ΔΔMean: 0.1218, ΔΔStd: 0.0760, t=4.806, p=0.0010 → ✅ Improved
+Unknown/Other - ΔΔMean: 0.0782, ΔΔStd: 0.0397, t=5.917, p=0.0002 → ✅ Improved
+
+=== ΔDiff Comparison: Predictive Parity ===
+African American - ΔΔMean: -0.0230, ΔΔStd: 0.0151, t=-4.578, p=0.0013 → ❌ Worsened
+Asian - ΔΔMean: 0.0097, ΔΔStd: 0.0095, t=3.085, p=0.0130 → ❌ Worsened
+Latin American - ΔΔMean: 0.0067, ΔΔStd: 0.0351, t=0.570, p=0.5827 → ❌ Worsened
+Arab - ΔΔMean: -0.0291, ΔΔStd: 0.0352, t=-2.477, p=0.0351 → ❌ Worsened
+Unknown/Other - ΔΔMean: -0.0638, ΔΔStd: 0.0175, t=-10.952, p=0.0000 → ❌ Worsened
+
+=== Constraint: EO ===
+
+=== ΔDiff Comparison: Equal Opportunity ===
+
+=== ΔDiff Comparison: Demographic Parity ===
+African American - ΔΔMean: -0.0208, ΔΔStd: 0.0119, t=-5.256, p=0.0005 → ❌ Worsened
+Asian - ΔΔMean: -0.0090, ΔΔStd: 0.0144, t=-1.868, p=0.0946 → ✅ Improved
+Latin American - ΔΔMean: -0.0108, ΔΔStd: 0.0153, t=-2.108, p=0.0643 → ❌ Worsened
+Arab - ΔΔMean: 0.0176, ΔΔStd: 0.0093, t=5.673, p=0.0003 → ✅ Improved
+Unknown/Other - ΔΔMean: 0.0014, ΔΔStd: 0.0143, t=0.297, p=0.7734 → ✅ Improved
+
+=== ΔDiff Comparison: Equal Opportunity ===
+African American - ΔΔMean: -0.0425, ΔΔStd: 0.0396, t=-3.218, p=0.0105 → ❌ Worsened
+Asian - ΔΔMean: -0.0159, ΔΔStd: 0.0335, t=-1.423, p=0.1884 → ✅ Improved
+Latin American - ΔΔMean: 0.0314, ΔΔStd: 0.0269, t=3.504, p=0.0067 → ✅ Improved
+Arab - ΔΔMean: 0.0677, ΔΔStd: 0.0877, t=2.316, p=0.0458 → ✅ Improved
+Unknown/Other - ΔΔMean: -0.0076, ΔΔStd: 0.0284, t=-0.803, p=0.4429 → ❌ Worsened
+
+=== ΔDiff Comparison: Predictive Parity ===
+African American - ΔΔMean: 0.0109, ΔΔStd: 0.0202, t=1.620, p=0.1397 → ✅ Improved
+Asian - ΔΔMean: 0.0049, ΔΔStd: 0.0094, t=1.548, p=0.1561 → ❌ Worsened
+Latin American - ΔΔMean: 0.0434, ΔΔStd: 0.0256, t=5.073, p=0.0007 → ❌ Worsened
+Arab - ΔΔMean: 0.0133, ΔΔStd: 0.0539, t=0.741, p=0.4776 → ✅ Improved
+Unknown/Other - ΔΔMean: -0.0113, ΔΔStd: 0.0139, t=-2.442, p=0.0372 → ❌ Worsened
