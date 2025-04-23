@@ -310,6 +310,18 @@ with open("./Fairness/CB/base/result/fairness_differences.json") as f:
 with open("./Fairness/CB/reweight/result/fairness_differences.json") as f:
     mitigated_diffs = json.load(f)
 
+# Iterate through all metrics and groups
+for metric_name in baseline_diffs.keys():
+    print(f"\n=== Disparity Comparison: {metric_name} ===")
+    
+    for group in baseline_diffs[metric_name]:
+        base_diff = np.array(baseline_diffs[metric_name][group])
+        mitigated_diff = np.array(mitigated_diffs[metric_name][group])
+        
+        t_stat, p_val = ttest_rel(mitigated_diff, base_diff)
+
+        print(f"{group} - t={t_stat:.3f}, p={p_val:.4f}")
+
 # Helper to interpret fairness movement
 def interpret_disparity_change(base_mean, delta_mean):
     if base_mean < 0 and delta_mean > 0:

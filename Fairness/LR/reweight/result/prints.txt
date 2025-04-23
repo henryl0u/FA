@@ -80,6 +80,27 @@ Latin American - ΔMean: -0.0153, ΔStd: 0.0345, t=-1.334, p=0.2149
 Arab - ΔMean: -0.0074, ΔStd: 0.0229, t=-0.965, p=0.3597
 Unknown/Other - ΔMean: 0.0028, ΔStd: 0.0188, t=0.440, p=0.6702
 
+=== Disparity Comparison: Demographic Parity ===
+African American - t=6.426, p=0.0001
+Asian - t=6.373, p=0.0001
+Latin American - t=10.216, p=0.0000
+Arab - t=6.197, p=0.0002
+Unknown/Other - t=6.075, p=0.0002
+
+=== Disparity Comparison: Equal Opportunity ===
+African American - t=7.664, p=0.0000
+Asian - t=5.945, p=0.0002
+Latin American - t=7.820, p=0.0000
+Arab - t=5.423, p=0.0004
+Unknown/Other - t=7.140, p=0.0001
+
+=== Disparity Comparison: Predictive Parity ===
+African American - t=1.653, p=0.1328
+Asian - t=0.972, p=0.3566
+Latin American - t=-4.914, p=0.0008
+Arab - t=-2.618, p=0.0279
+Unknown/Other - t=-2.173, p=0.0579
+
 === ΔDiff Comparison: Demographic Parity ===
 African American - ΔΔMean: 0.0169, ΔΔStd: 0.0079, t=6.426, p=0.0001 → ❌ Worsened
 Asian - ΔΔMean: 0.0255, ΔΔStd: 0.0120, t=6.373, p=0.0001 → ❌ Worsened
