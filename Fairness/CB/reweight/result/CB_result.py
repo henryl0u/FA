@@ -1,6 +1,7 @@
 import numpy as np
 import sys
 from scipy.stats import ttest_rel
+import json
 
 base_path = "./Fairness/CB/reweight/result"
 
@@ -282,7 +283,62 @@ for metric_name, groups in fairness_metrics_reweighted.items():
         t_stat, p_val = ttest_rel(reweighted_values, baseline_values)
         print(f"{group} - ΔMean: {mean_diff:.4f}, ΔStd: {std_diff:.4f}, t={t_stat:.3f}, p={p_val:.4f}")
 
+# To store all difference values
+fairness_differences = {}
 
+for metric_name, groups in fairness_metrics_reweighted.items():
+    ref_values = np.array(groups[reference_group])
+    metric_diff = {}
+
+    for group, values in groups.items():
+        if group == reference_group:
+            continue
+        values = np.array(values)
+        diff = (values - ref_values).tolist()
+        metric_diff[group] = diff
+
+    fairness_differences[metric_name] = metric_diff
+
+# Save the difference dictionary to a JSON file
+with open(f"{base_path}/fairness_differences.json", "w") as json_file:
+    json.dump(fairness_differences, json_file, indent=4)
+
+# Load saved disparity diffs
+with open("./Fairness/CB/base/result/fairness_differences.json") as f:
+    baseline_diffs = json.load(f)
+
+with open("./Fairness/CB/reweight/result/fairness_differences.json") as f:
+    mitigated_diffs = json.load(f)
+
+# Helper to interpret fairness movement
+def interpret_disparity_change(base_mean, delta_mean):
+    if base_mean < 0 and delta_mean > 0:
+        return "✅ Improved"
+    elif base_mean > 0 and delta_mean < 0:
+        return "✅ Improved"
+    elif base_mean == 0 and delta_mean != 0:
+        return "⚠️ New Disparity"
+    else:
+        return "❌ Worsened"
+
+# Iterate through all metrics and groups
+for metric_name in baseline_diffs.keys():
+    print(f"\n=== ΔDiff Comparison: {metric_name} ===")
+    
+    for group in baseline_diffs[metric_name]:
+        base_diff = np.array(baseline_diffs[metric_name][group])
+        mitigated_diff = np.array(mitigated_diffs[metric_name][group])
+        
+        # ΔDisparity = disparity_mitigated − disparity_base
+        delta_diff = mitigated_diff - base_diff
+        
+        mean_base = np.mean(base_diff)
+        mean_delta = np.mean(delta_diff)
+        std_delta = np.std(delta_diff)
+        t_stat, p_val = ttest_rel(mitigated_diff, base_diff)
+        interpretation = interpret_disparity_change(mean_base, mean_delta)
+
+        print(f"{group} - ΔΔMean: {mean_delta:.4f}, ΔΔStd: {std_delta:.4f}, t={t_stat:.3f}, p={p_val:.4f} → {interpretation}")
 
 # Change standard output back to default
 sys.stdout = default_stdout
