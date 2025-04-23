@@ -1,6 +1,7 @@
 import numpy as np
 import sys
 from scipy.stats import ttest_rel
+import json
 
 base_path = "./Fairness/RF/base/result"
 
@@ -149,6 +150,25 @@ for metric_name, groups in fairness_metrics.items():
         t_stat, p_val = ttest_rel(values, ref_values)
         print(f"{group} - ΔMean: {mean_diff:.4f}, ΔStd: {std_diff:.4f}, t={t_stat:.3f}, p={p_val:.4f}")
 
+# To store all difference values
+fairness_differences = {}
+
+for metric_name, groups in fairness_metrics.items():
+    ref_values = np.array(groups[reference_group])
+    metric_diff = {}
+
+    for group, values in groups.items():
+        if group == reference_group:
+            continue
+        values = np.array(values)
+        diff = (values - ref_values).tolist()
+        metric_diff[group] = diff
+
+    fairness_differences[metric_name] = metric_diff
+
+# Save the difference dictionary to a JSON file
+with open(f"{base_path}/fairness_differences.json", "w") as json_file:
+    json.dump(fairness_differences, json_file, indent=4)
 
 
 
