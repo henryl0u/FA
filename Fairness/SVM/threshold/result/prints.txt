@@ -195,6 +195,48 @@ Latin American - t=0.265, p=0.7967
 Arab - t=-5.411, p=0.0004
 Unknown/Other - t=-2.326, p=0.0450
 
+=== Disparity Comparison DP (ABS): Demographic Parity ===
+African American - t=2.945, p=0.0164
+Asian - t=-0.812, p=0.4376
+Latin American - t=0.613, p=0.5553
+Arab - t=0.456, p=0.6593
+Unknown/Other - t=-1.375, p=0.2025
+
+=== Disparity Comparison DP (ABS): Equal Opportunity ===
+African American - t=1.825, p=0.1013
+Asian - t=-1.608, p=0.1423
+Latin American - t=2.405, p=0.0396
+Arab - t=-7.624, p=0.0000
+Unknown/Other - t=1.962, p=0.0814
+
+=== Disparity Comparison DP (ABS): Predictive Parity ===
+African American - t=3.273, p=0.0096
+Asian - t=0.895, p=0.3939
+Latin American - t=-2.577, p=0.0298
+Arab - t=5.267, p=0.0005
+Unknown/Other - t=6.515, p=0.0001
+
+=== Disparity Comparison EO (ABS): Demographic Parity ===
+African American - t=1.442, p=0.1831
+Asian - t=-0.358, p=0.7283
+Latin American - t=1.562, p=0.1528
+Arab - t=-3.192, p=0.0110
+Unknown/Other - t=-3.408, p=0.0078
+
+=== Disparity Comparison EO (ABS): Equal Opportunity ===
+African American - t=1.783, p=0.1083
+Asian - t=-0.839, p=0.4232
+Latin American - t=2.544, p=0.0315
+Arab - t=-3.569, p=0.0060
+Unknown/Other - t=4.123, p=0.0026
+
+=== Disparity Comparison EO (ABS): Predictive Parity ===
+African American - t=-0.998, p=0.3445
+Asian - t=0.582, p=0.5751
+Latin American - t=0.265, p=0.7967
+Arab - t=5.220, p=0.0005
+Unknown/Other - t=2.326, p=0.0450
+
 === Constraint: DP ===
 
 === ΔDiff Comparison: Demographic Parity ===
