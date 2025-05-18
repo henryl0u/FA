@@ -284,3 +284,11 @@ Asian - ΔΔMean: 0.0161, ΔΔStd: 0.0386, t=1.250, p=0.2428 → ❌ Worsened
 Latin American - ΔΔMean: -0.0286, ΔΔStd: 0.0696, t=-1.235, p=0.2482 → ✅ Improved
 Arab - ΔΔMean: -0.0380, ΔΔStd: 0.0586, t=-1.944, p=0.0838 → ❌ Worsened
 Unknown/Other - ΔΔMean: -0.0531, ΔΔStd: 0.0447, t=-3.563, p=0.0061 → ❌ Worsened
+
+=== Aggregated Fairness Disparities (vs Caucasian, Reweighted) ===
+Demographic Parity EQ Disparity (vs Caucasian): 0.0074 ± 0.0406
+Equal Opportunity EQ Disparity (vs Caucasian): -0.0301 ± 0.0749
+Predictive Parity EQ Disparity (vs Caucasian): -0.0398 ± 0.1034
+Demographic Parity DP Disparity (vs Caucasian): 0.0315 ± 0.0473
+Equal Opportunity DP Disparity (vs Caucasian): 0.0175 ± 0.0748
+Predictive Parity DP Disparity (vs Caucasian): -0.0522 ± 0.1168

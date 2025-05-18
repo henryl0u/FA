@@ -49,3 +49,8 @@ Asian - ΔMean: 0.0818, ΔStd: 0.0100, t=24.648, p=0.0000
 Latin American - ΔMean: 0.0967, ΔStd: 0.0175, t=16.557, p=0.0000
 Arab - ΔMean: -0.1093, ΔStd: 0.0293, t=-11.198, p=0.0000
 Unknown/Other - ΔMean: -0.0283, ΔStd: 0.0126, t=-6.719, p=0.0001
+
+=== Aggregated Fairness Disparities (vs Caucasian, Reweighted) ===
+Demographic Parity Disparity (vs Caucasian): -0.0225 ± 0.0257
+Equal Opportunity Disparity (vs Caucasian): -0.0492 ± 0.0815
+Predictive Parity Disparity (vs Caucasian): -0.0075 ± 0.0852

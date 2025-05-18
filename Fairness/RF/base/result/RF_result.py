@@ -170,7 +170,24 @@ for metric_name, groups in fairness_metrics.items():
 with open(f"{base_path}/fairness_differences.json", "w") as json_file:
     json.dump(fairness_differences, json_file, indent=4)
 
+# === Aggregated Disparities vs Reference Group (Reweighted) ===
+print("\n=== Aggregated Fairness Disparities (vs Caucasian, Reweighted) ===")
 
+for metric_name, groups in fairness_metrics.items():
+    ref_values = np.array(groups[reference_group])
+    all_disparities = []
+
+    for group, values in groups.items():
+        if group == reference_group:
+            continue  # Skip reference group
+        values = np.array(values)
+        disparities = values - ref_values
+        all_disparities.extend(disparities.tolist())  # Add all disparities across folds
+
+    all_disparities = np.array(all_disparities)
+    mean_disp = np.mean(all_disparities)
+    std_disp = np.std(all_disparities)
+    print(f"{metric_name} Disparity (vs {reference_group}): {mean_disp:.4f} ± {std_disp:.4f}")
 
 # Change standard output back to default
 sys.stdout = default_stdout

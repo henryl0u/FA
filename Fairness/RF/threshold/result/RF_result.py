@@ -761,7 +761,45 @@ for metric_name in baseline_diffs.keys():
 
         print(f"{group} - ΔΔMean: {mean_delta:.4f}, ΔΔStd: {std_delta:.4f}, t={t_stat:.3f}, p={p_val:.4f} → {interpretation}")
 
+# === Aggregated Disparities vs Reference Group (Reweighted) ===
+print("\n=== Aggregated Fairness Disparities (vs Caucasian, Reweighted) ===")
 
+for metric_name, groups in fairness_metrics_EO.items():
+    ref_values = np.array(groups[reference_group])
+    all_disparities = []
+
+    for group, values in groups.items():
+        if group == reference_group:
+            continue  # Skip reference group
+        values = np.array(values)
+        disparities = values - ref_values
+        all_disparities.extend(disparities.tolist())  # Add all disparities across folds
+
+    all_disparities = np.array(all_disparities)
+    mean_disp = np.mean(all_disparities)
+    std_disp = np.std(all_disparities)
+    print(
+        f"{metric_name} EQ Disparity (vs {reference_group}): {mean_disp:.4f} ± {std_disp:.4f}"
+    )
+
+for metric_name, groups in fairness_metrics_DP.items():
+    ref_values = np.array(groups[reference_group])
+    all_disparities = []
+
+    for group, values in groups.items():
+        if group == reference_group:
+            continue  # Skip reference group
+        values = np.array(values)
+        disparities = values - ref_values
+        all_disparities.extend(disparities.tolist())  # Add all disparities across folds
+
+    all_disparities = np.array(all_disparities)
+    mean_disp = np.mean(all_disparities)
+    std_disp = np.std(all_disparities)
+    print(
+        f"{metric_name} DP Disparity (vs {reference_group}): {mean_disp:.4f} ± {std_disp:.4f}"
+    )
+    
 # Change standard output back to default
 sys.stdout = default_stdout
 
